@@ -29,4 +29,13 @@ lazy val syncExamples = (project in file("sync-examples"))
       libraryDependencies ++= syncDeps
     )
 
+lazy val presentation = (project in file("presentation"))
+      .dependsOn(tcpStreams, httpStreams, syncExamples)
+    .settings(
+      tutSourceDirectory := baseDirectory.value / "tut",
+      tutTargetDirectory := baseDirectory.value / "../docs",
+      watchSources ++= (tutSourceDirectory.value ** "*.html").get
+    )
+    .enablePlugins(TutPlugin)
+
 

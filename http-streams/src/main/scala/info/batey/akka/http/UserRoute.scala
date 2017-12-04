@@ -8,6 +8,7 @@ import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
 import akka.util.ByteString
 import com.datastax.driver.core.Session
+import info.batey.akka.http.Domain.User
 import spray.json._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -17,7 +18,7 @@ import scala.util.{Failure, Success}
 trait UserRoute {
   import JsonProtocol._
 
-  def route(implicit session: Session, mat: ActorMaterializer, ec: ExecutionContext): Route =
+  def route(implicit mat: ActorMaterializer): Route =
     path("user" / "tracking" / Segment) { name: String =>
 
       val source = DataAccess.lookupEvents(name).map(e =>
@@ -28,9 +29,7 @@ trait UserRoute {
       path("user" / Segment) { name: String =>
         get {
           withRequestTimeout(500.millis) {
-
-            val user: Future[Option[Domain.User]] = DataAccess.lookupUser(name)
-
+            val user: Future[Option[User]] = DataAccess.lookupUser(name)
             onComplete(user) {
               case Success(None) => complete(StatusCodes.NotFound)
               case Success(Some(u)) => complete(u)

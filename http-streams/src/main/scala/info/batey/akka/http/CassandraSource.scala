@@ -28,7 +28,7 @@ final class CassandraSource(statement: Statement, session: Session) extends Grap
       override def preStart(): Unit = {
         implicit val ec = materializer.executionContext
         fetchCB = getAsyncCallback[Try[ResultSet]](tryPush)
-        session.executeAsync(statement).onComplete(fetchCB.invoke)
+        session.executeAsync(statement).asScala.onComplete(fetchCB.invoke)
       }
 
       setHandler(
@@ -43,7 +43,7 @@ final class CassandraSource(statement: Statement, session: Session) extends Grap
                 completeStage()
               case Some(rs) =>
                 log.info("Fetching more results from Cassandra")
-                rs.fetchMoreResults().onComplete(fetchCB.invoke)
+                rs.fetchMoreResults().asScala.onComplete(fetchCB.invoke)
               case None =>
             }
           }

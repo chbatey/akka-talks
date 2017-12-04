@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Awesome Presentation</title>
+    <meta charset="utf-8">
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+        @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+        @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+        body {
+            font-family: 'Droid Serif', 'Helvetica';
+        }
+
+        h1, h2, h3 {
+            font-family: 'Yanone Kaffeesatz', 'Gill Sans';
+            font-weight: normal;
+        }
+
+        .remark-code, .remark-inline-code {
+            font-family: 'Ubuntu Mono', 'Consolas', 'Courier New';
+        }
+    </style>
+</head>
+<body>
+<textarea id="source">
+
+
+class: center, middle
+
+# Scalable, responsive, back pressured services (with Akka)
+Christopher Batey • `@chbatey`
+
+???
+- notes here
+
+---
+
+# About me
+
+* Christopher Batey
+* Work @ Lightbend on the Akka team
+    * Akka
+    * Akka-streams
+    * Akka-http
+    * Reactive-kafka
+    * Akka persistence for Apache Cassandra
+    * Alpakka
+
+???
+- Notes
+
+---
+
+class: center, middle
+
+# Responsive
+# Scalable
+
+???
+- Notes
+
+---
+
+class: center, middle
+
+# Asynchronous
+# Back pressured
+
+???
+- Notes
+
+---
+# Goals
+
+* High level
+  * What does async give us?
+  * What does flow control give us?
+* Concrete tech
+  * Flow control with Akka streams
+
+---
+class: center, middle
+# Responsive
+
+???
+- Because reasons
+
+---
+# Responsiveness
+* Control over when your application response
+  * Queues and buffers
+* Dependencies
+
+???
+- Uh huh
+
+---
+class: center, middle
+# Execution models
+
+???
+- Single threaded
+- Thread per request
+- Thread per core without blocking IO
+
+
+---
+# Thread per request
+
+
+
+
+```scala
+def post(request: HttpRequest): HttpResponse = {
+  // do something very important
+  ???
+}
+```
+
+???
+-
+
+---
+# Thread per request
+
+
+
+```scala
+def post(request: HttpRequest): HttpResponse = {
+   val userId = request.getQueryParam("userId")
+   val user: User = getUserFromDatabase(userId)
+
+   ExternalService.sendPresentToUser(user)
+
+   HttpResponse(200)
+ }
+```
+
+???
+- Bad mmkay
+---
+
+# Thread per request
+
+
+
+```scala
+def post(request: HttpRequest): HttpResponse = {
+   // nice and query
+   val userId = request.getQueryParam("userId")
+   // 5ms to 10 seconds?
+   val user: User = getUserFromDatabase(userId)
+
+   // 5ms to 10 seconds?
+   ExternalService.sendPresentToUser(user)
+
+   HttpResponse(200)
+ }
+```
+
+???
+- Socket read timeouts??
+- Link to prove it talk next
+---
+
+# Demonstrating this
+
+```
+http://skillsmatter.com/skillscasts/6520-think-your-software-is-fault-tolerant-prove-it
+```
+
+???
+- go try it out
+
+---
+# Async
+
+
+
+
+
+```scala
+def lookupUser(userId: UserId): Future[Option[User]] = {
+   session.executeAsync("select * from users where user_id = ?", userId).asScala
+     .map((rs: ResultSet) => Option(rs.one())
+     .map(row => User(
+         row.getString("user_id"),
+         row.getString("user_name"),
+         row.getInt("age"))))
+}
+```
+
+???
+- see
+
+---
+class: centre, middle
+#  Responsiveness under load
+
+???
+- Eyup
+
+---
+# Pics of services talking to each other
+
+---
+# Utilisation graphs
+
+---
+# Pic of a client overloading a server
+
+---
+# Pic of a server overloading a client
+
+---
+# Reacting to failure
+
+???
+- Circuit breakers
+- Throttling
+
+---
+# Flow control
+
+???
+- Dynamically adjust the rate based on demand
+
+---
+# TCP flow control
+
+???
+- Gets some pics
+
+---
+# Reactive streams
+
+---
+# Akka HTTP
+
+```scala
+// TODO example
+```
+
+---
+class: centre, middle
+# Scalability
+
+---
+class: centre, middle
+# Resource efficiency
+
+---
+# Summary
+
+---
+class: center, middle
+
+# Thanks!
+Code and slides at `chbatey/akka-streams-examples` on GitHub
+
+## Questions?
+
+
+
+
+
+
+ </textarea>
+<script src="remark-latest.min.js">
+</script>
+<script>
+    var slideshow = remark.create();
+</script>
+</body>
+</html>
