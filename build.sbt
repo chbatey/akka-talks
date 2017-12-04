@@ -9,9 +9,9 @@ lazy val root = (project in file("."))
       scalaVersion := "2.12.4",
       version := "0.1.0-SNAPSHOT"
     )))
-    .settings(
-      name := "akka-streams"
-    )
+  .settings(
+    name := "akka-streams"
+  )
   .aggregate(tcpStreams)
 
 lazy val tcpStreams = (project in file("tcp-streams"))
@@ -25,17 +25,18 @@ lazy val httpStreams = (project in file("http-streams"))
   )
 
 lazy val syncExamples = (project in file("sync-examples"))
-    .settings(
-      libraryDependencies ++= syncDeps
-    )
+  .settings(
+    libraryDependencies ++= syncDeps
+  )
+  .dependsOn(httpStreams) //steal the domain classes
 
 lazy val presentation = (project in file("presentation"))
-      .dependsOn(tcpStreams, httpStreams, syncExamples)
-    .settings(
-      tutSourceDirectory := baseDirectory.value / "tut",
-      tutTargetDirectory := baseDirectory.value / "../docs",
-      watchSources ++= (tutSourceDirectory.value ** "*.html").get
-    )
-    .enablePlugins(TutPlugin)
+  .dependsOn(tcpStreams, httpStreams, syncExamples)
+  .settings(
+    tutSourceDirectory := baseDirectory.value / "tut",
+    tutTargetDirectory := baseDirectory.value / "../docs",
+    watchSources ++= (tutSourceDirectory.value ** "*.html").get
+  )
+  .enablePlugins(TutPlugin)
 
 

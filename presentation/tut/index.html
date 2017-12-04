@@ -25,11 +25,34 @@
 <body>
 <textarea id="source">
 
+```tut:invisible
+import com.datastax.driver.core.{ResultSet, Session}
+import com.typesafe.scalalogging.LazyLogging
+import info.batey.akka.http.Domain.{Event, User, UserId}
+import info.batey.akka.http._
+
+import scala.collection.JavaConverters._
+import scala.concurrent.{ExecutionContext, Future}
+import info.batey.akka.http.DataAccess.{ cluster, session }
+import scala.concurrent.ExecutionContext.Implicits.global
+
+import info.batey.sync.WebFramework._
+import info.batey.sync.SyncWebFramework._
+import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
+import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.server._
+import akka.stream.ActorMaterializer
+import spray.json._
+
+```
 
 class: center, middle
 
 # Scalable, responsive, back pressured services (with Akka)
-Christopher Batey • `@chbatey`
+
+Christopher Batey
+
+• `@chbatey`
 
 ???
 - notes here
@@ -80,11 +103,25 @@ class: center, middle
   * Flow control with Akka streams
 
 ---
+# Use case
+* HTTP Service, endpoints for:
+  * User information from database
+  * Sending data to another service
+  * Getting user activity over a large time span
+
+* Requirements
+  * Respond in a timely manner, even if it is a failure
+  * Don't do any unnecessary work
+???
+-
+
+---
 class: center, middle
 # Responsive
 
 ???
 - Because reasons
+
 
 ---
 # Responsiveness
@@ -103,14 +140,12 @@ class: center, middle
 - Single threaded
 - Thread per request
 - Thread per core without blocking IO
+- How to get this wrong even with the right tools
 
 
 ---
 # Thread per request
 
-```tut:invisible
-import info.batey.sync.SyncWebFramework._
-```
 
 ```tut:silent
 def post(request: HttpRequest): HttpResponse = {
@@ -120,13 +155,10 @@ def post(request: HttpRequest): HttpResponse = {
 ```
 
 ???
--
+- Hystrix
 
 ---
 # Thread per request
-```tut:invisible
-import info.batey.sync.SyncWebFramework._
-```
 
 ```tut:silent
 def post(request: HttpRequest): HttpResponse = {
@@ -144,18 +176,15 @@ def post(request: HttpRequest): HttpResponse = {
 ---
 
 # Thread per request
-```tut:invisible
-import info.batey.sync.SyncWebFramework._
-```
 
 ```tut:silent
 def post(request: HttpRequest): HttpResponse = {
-   // nice and query
+   // nice and quick
    val userId = request.getQueryParam("userId")
-   // 5ms to 10 seconds?
+   // 5 millis to 10 seconds?
    val user: User = getUserFromDatabase(userId)
 
-   // 5ms to 10 seconds?
+   // 5 milliss to 10 seconds?
    ExternalService.sendPresentToUser(user)
 
    HttpResponse(200)
@@ -165,6 +194,8 @@ def post(request: HttpRequest): HttpResponse = {
 ???
 - Socket read timeouts??
 - Link to prove it talk next
+- Pros: very simple programming model
+- "back pressure" via max number of threads
 ---
 
 # Demonstrating this
@@ -175,26 +206,58 @@ http://skillsmatter.com/skillscasts/6520-think-your-software-is-fault-tolerant-p
 
 ???
 - go try it out
+---
+# Async
+
+
+```tut:silent
+def request(request: HttpRequest): Future[HttpResponse] = ???
+```
+
+* Can have timeout independent of calls to our dependencies
+* No thread is being used if we're waiting on IO
+* Works well for small responses that are ready to go
+
+???
+- TODO
+
 
 ---
 # Async
 
 
-```tut:invisible
-import akka.NotUsed
-import akka.stream.ActorMaterializer
-import akka.stream.scaladsl.Source
-import com.datastax.driver.core.utils.UUIDs
-import com.datastax.driver.core.{ResultSet, Session, SimpleStatement}
-import com.typesafe.scalalogging.LazyLogging
-import info.batey.akka.http.Domain.{Event, User, UserId}
-import info.batey.akka.http._
+```tut:silent
+def request(request: HttpRequest): Future[HttpResponse] =
+  for {
+    user <- lookupUser(request.getQueryParam("userId"))
+    _ <- AsyncExternalService.sendPresentToUser(user)
+  } yield HttpResponse(200)
+```
 
-import scala.collection.JavaConverters._
-import scala.concurrent.{ExecutionContext, Future}
-import info.batey.akka.http.DataAccess.{ cluster, session }
-import scala.concurrent.ExecutionContext.Implicits.global
+???
+-
 
+---
+# Akka HTTP
+
+```tut:silent
+path("user" / Segment) { name =>
+  get {
+    val user: Future[Option[User]] = DataAccess.lookupUser(name)
+    onComplete(user) {
+      case Success(Some(u)) => complete(u)
+      case Success(None)    => complete(NotFound)
+      case Failure(t)       => complete(InternalServerError, t.getMessage)
+    }
+}
+```
+
+
+---
+# Database
+
+```scala
+val session = ... // From the Cassandra driver
 ```
 
 ```tut:silent
@@ -212,6 +275,24 @@ def lookupUser(userId: UserId): Future[Option[User]] = {
 - see
 
 ---
+# Akka HTTP
+
+
+```tut:silent
+path("user" / Segment) { name =>
+  get {
+    withRequestTimeout(500.millis) {
+      val user: Future[Option[User]] = DataAccess.lookupUser(name)
+      onComplete(user) {
+        case Success(Some(u)) => complete(u)
+        case Success(None)    => complete(NotFound)
+        case Failure(t)       => complete(InternalServerError, t.getMessage)
+      }
+    }
+}
+```
+
+---
 class: centre, middle
 #  Responsiveness under load
 
@@ -219,29 +300,101 @@ class: centre, middle
 - Eyup
 
 ---
-# Pics of services talking to each other
+# Playing fair
+
+```
+
+
+
+
+                                                   +-----------+
+                                                   |           |
+                                             +---->| Database  |
+                                             |     |           |
+                                             |     +-----------+
+                                             |
+   +---------+                   +----------+
+   |         | +---------------> |          |
+   | Client  |                   | Server   |
+   |         | <---------------+ |          |
+   +---------+                   +----------+
+                                             |
+                                             |
+                                             |
+                                             |       +------------+
+                                             |       |            |
+                                             +------+|  Service   |
+                                                     |            |
+                                                     +------------+
+```
 
 ---
-# Utilisation graphs
+# The default
+
+.center[![queue](toomuchmail.jpg)]
 
 ---
-# Pic of a client overloading a server
+# Queueing and/or buffering
+
+* How would this work if Kafka was between the services?
+
+<br/>
+<br/>
+
+.center[![queue](pubsub-half.png)]
 
 ---
-# Pic of a server overloading a client
+# Fast publisher
+
+* Down stream gets overwhelmed
+* Publisher has wasted resources
+
+<br/>
+<br/>
+
+.center[![queue](pubsub-full.png)]
+
+<br/>
+<br/>
+
+* Would this work in memory?
+* Why produce data no one is ready to consume?
+
+---
+# Fast subscriber
+* Underutilized subscriber
+* Publisher happy
+
+<br/>
+<br/>
+
+.center[![queue](pubsub-empty.png)]
 
 ---
 # Reacting to failure
+* Is the consumer slow or down?
+* Circuit breakers
+
+<br/>
+<br/>
+.center[![Circuit breaker](circuit-breaker.png)]
+
 
 ???
+
 - Circuit breakers
 - Throttling
 
 ---
 # Flow control
 
+* Dynamically adjust the rate based on demand
+
+<br/>
+<br/>
+.center[![queue](demand.png)]
+
 ???
-- Dynamically adjust the rate based on demand
 
 ---
 # TCP flow control
