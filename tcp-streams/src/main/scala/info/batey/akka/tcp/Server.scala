@@ -1,10 +1,11 @@
 package info.batey.akka.tcp
 
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
+import akka.stream.{ActorMaterializer, OverflowStrategy, ThrottleMode}
 import akka.stream.scaladsl.{Tcp, _}
 import akka.util.ByteString
 import com.typesafe.config.ConfigFactory
+import scala.concurrent.duration._
 
 import scala.util.{Failure, Success}
 
@@ -20,13 +21,13 @@ object Server extends App {
   implicit val ec = system.dispatcher
 
   val processingFlow =
-    Chunker(chunkSize = 2).via(
-      Flow.fromFunction((bs: ByteString) => {
-        // don't do this lol
-        Thread.sleep(2000)
-        system.log.info("Bs:" + bs)
-        ByteString()
-      }))
+    Chunker(chunkSize = 2)
+      .throttle(1, 2.seconds, 1, ThrottleMode.Shaping)
+      .via(
+        Flow.fromFunction((bs: ByteString) => {
+          system.log.info("Bs:" + bs)
+          ByteString()
+        }))
 
   val binding = Tcp().bind("localhost", 9090)
 

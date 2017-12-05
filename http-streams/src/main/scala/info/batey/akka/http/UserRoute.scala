@@ -1,10 +1,13 @@
 package info.batey.akka.http
 
 import java.nio.charset.StandardCharsets
+
+import akka.NotUsed
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
+import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import info.batey.akka.http.Domain.User
 import spray.json._
@@ -16,6 +19,7 @@ import scala.util.{Failure, Success}
 trait UserRoute {
 
   import JsonProtocol._
+  implicit val mat: ActorMaterializer
 
   val userRoute =
     path("user" / Segment) { name =>
@@ -32,13 +36,13 @@ trait UserRoute {
       }
     }
 
-  def route(implicit mat: ActorMaterializer): Route =
-    path("user" / "tracking" / Segment) { name: String =>
+  val streamingRoute = path("user" / "tracking" / Segment) { name: String =>
+    val source: Source[Domain.Event, NotUsed] = DataAccess.lookupEvents(name)
+    val asJson: Source[ByteString, NotUsed] = source.map(e =>
+      ByteString(s"${e.toJson.toString()}\n", StandardCharsets.UTF_8))
 
-      val source = DataAccess.lookupEvents(name).map(e =>
-        ByteString(s"${e.toJson.toString()}\n", StandardCharsets.UTF_8))
+    complete(HttpEntity(ContentTypes.`application/json`, asJson))
+  }
 
-      complete(HttpEntity(ContentTypes.`application/json`, source))
-    } ~ userRoute
-
+  val route: Route = streamingRoute ~ userRoute
 }

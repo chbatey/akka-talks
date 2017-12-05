@@ -10,7 +10,7 @@ import scala.concurrent.Future
 object ServerApp extends App with UserRoute {
 
   implicit val system = ActorSystem()
-  implicit val materialiser = ActorMaterializer()
+  implicit val mat = ActorMaterializer()
   implicit val ec = system.dispatcher
 
   val bound: Future[Http.ServerBinding] = Http().bindAndHandle(route, "localhost", 8080)

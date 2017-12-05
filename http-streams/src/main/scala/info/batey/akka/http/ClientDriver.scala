@@ -10,9 +10,9 @@ import com.typesafe.config.ConfigFactory
 import info.batey.akka.http.Domain.Event
 
 import scala.io.StdIn
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
-object ClientDriver extends App {
+object ClientDriver extends App with ActivityClient {
 
   val config = ConfigFactory.parseString(
     """
@@ -26,7 +26,7 @@ object ClientDriver extends App {
   implicit val mat = ActorMaterializer()
   implicit val ec = system.dispatcher
 
-  val activity = ActivityClient.eventsForUser("chbatey")
+  val activity = eventsForUser("chbatey")
 
   val testProbe = TestSink.probe[Event]
 
@@ -34,15 +34,15 @@ object ClientDriver extends App {
     case Success(source) =>
       val sub: TestSubscriber.Probe[Event] = source.runWith(testProbe)
       while (true) {
-        val request = StdIn.readLine().toInt
-        println(s"Requesting " + request)
-        sub.request(request)
-        val results = sub.expectNextN(request)
-        println(results)
+        Try {
+          val request = StdIn.readLine().toInt
+          println(s"Requesting " + request)
+          sub.request(request)
+          val results = sub.expectNextN(request)
+          println(results)
+        }
       }
     case Failure(t) =>
       println("Darn" + t)
   }
-
-
 }

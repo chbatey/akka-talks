@@ -19,7 +19,7 @@ object Client extends App {
   implicit val materialiser = ActorMaterializer()
   implicit val ec = system.dispatcher
 
-  val source: Source[ByteString, Cancellable] = Source.tick(10.millis, 10.millis,
+  val source: Source[ByteString, Cancellable] = Source.tick(50.millis, 50.millis,
     ByteString(new Array[Byte](10000)))
     .map(bs => {
       system.log.info("Sent")
@@ -30,9 +30,7 @@ object Client extends App {
   source.runWith(Sink.foreach(println))
 }
 
-
 object StupidClient extends App {
-
   val system = ActorSystem()
   val socket: SocketChannel = SocketChannel.open()
   socket.connect(new InetSocketAddress("127.0.0.1", 9090))
@@ -45,6 +43,6 @@ object StupidClient extends App {
     bb.flip()
     socket.write(bb)
     system.log.info("Sent")
-  }, 10L, 10L, TimeUnit.MILLISECONDS)
+  }, 50, 50, TimeUnit.MILLISECONDS)
 
 }

@@ -12,16 +12,25 @@ import spray.json._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object ActivityClient {
+trait ActivityClient {
+
   import JsonProtocol._
 
-  def eventsForUser(userId: String)(implicit system: ActorSystem, mat: ActorMaterializer, ec: ExecutionContext): Future[Source[Event, NotUsed]] = {
+  implicit val system: ActorSystem
+  implicit val mat: ActorMaterializer
+  implicit val ec: ExecutionContext
+
+  def eventsForUser(userId: String): Future[Source[Event, NotUsed]] = {
+
     val response: Future[HttpResponse] = Http().singleRequest(
       HttpRequest(uri = s"http://localhost:8080/user/tracking/$userId")
     )
+
     response.map {
       case HttpResponse(StatusCodes.OK, headers, entity, _) =>
-        entity.dataBytes.via(Framing.delimiter(
+        val responseBytes: Source[ByteString, Any] = entity.dataBytes
+
+        responseBytes.via(Framing.delimiter(
           ByteString("\n"), maximumFrameLength = 100, allowTruncation = true))
           .map(_.utf8String.parseJson.convertTo[Event])
           .mapMaterializedValue(_ => NotUsed)

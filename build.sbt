@@ -39,4 +39,9 @@ lazy val presentation = (project in file("presentation"))
   )
   .enablePlugins(TutPlugin)
 
+lazy val akkaStreams = (project in file("akka-streams"))
+    .settings(
+      libraryDependencies ++= tcpStreamsDeps
+    )
+
 
