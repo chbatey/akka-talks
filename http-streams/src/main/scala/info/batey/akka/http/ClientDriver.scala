@@ -9,6 +9,7 @@ import akka.stream.testkit.scaladsl.TestSink
 import com.typesafe.config.ConfigFactory
 import info.batey.akka.http.Domain.Event
 
+import scala.concurrent.Future
 import scala.io.StdIn
 import scala.util.{Failure, Success, Try}
 
@@ -26,7 +27,7 @@ object ClientDriver extends App with ActivityClient {
   implicit val mat = ActorMaterializer()
   implicit val ec = system.dispatcher
 
-  val activity = eventsForUser("chbatey")
+  val activity: Future[Source[Event, NotUsed]] = eventsForUser("chbatey")
 
   val testProbe = TestSink.probe[Event]
 

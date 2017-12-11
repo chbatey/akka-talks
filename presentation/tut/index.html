@@ -55,7 +55,7 @@ import scala.concurrent.{Await, Future}
 
 class: center, middle
 
-# Scalable, responsive, back pressured services with Akka
+# Responsive, back pressured services with Akka
 
 Christopher Batey
 
@@ -64,7 +64,7 @@ Lightbend
 `@chbatey`
 
 ???
-- notes here
+- Useful for non Akka projects
 
 ---
 
@@ -75,12 +75,11 @@ Lightbend
     * Akka
     * Akka-streams
     * Akka-http
-    * Reactive-kafka
     * Akka persistence for Apache Cassandra
     * Alpakka
 
 ???
-- Notes
+- Building services rather than libraries/frameworks
 
 ---
 
@@ -93,6 +92,8 @@ class: center, middle
 - High level goals
 - Everyone: Responsive even for low throughput
 - Scalable for those who need it
+- Scalable in process: Execution model appropriate
+- Scalable across machines
 - Resource efficiency
 
 ---
@@ -104,6 +105,12 @@ class: center, middle
 
 ???
 - Techniques to achieve the goals
+- Different/better techniques?
+- Async
+  - Remaining responsive
+- Back pressure/FlowControl
+  - Dealing with components that run at different speeds
+  - Much more important when moving away from thread per request
 
 ---
 # Goals
@@ -128,7 +135,6 @@ class: center, middle
 # Use case
 * HTTP Service, endpoints for:
   * User information from database
-  * Sending data to another service
   * Getting user activity over a large time span
 --
 
@@ -426,16 +432,6 @@ class: centre, middle
   send back back pressure?
 
 ---
-# Fast subscriber
-* Underutilized subscriber
-* Publisher happy
-
-<br/>
-<br/>
-
-.center[![queue](pubsub-empty.png)]
-
----
 # Reacting to failure
 * Is the consumer slow or down?
 * Circuit breakers
@@ -501,6 +497,11 @@ class: centre, middle
 
 
 <img src="wireshark-fullwindow-2.png" width="800">
+
+---
+# TCP windowing
+
+<img src="ss.png" width="800">
 
 ???
 - Window fills up, client stops sending
