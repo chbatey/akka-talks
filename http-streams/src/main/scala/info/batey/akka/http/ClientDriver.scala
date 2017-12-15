@@ -18,7 +18,6 @@ object ClientDriver extends App with ActivityClient {
   val config = ConfigFactory.parseString(
     """
       |akka.log-level = DEBUG
-      |akka.http.client.idle-timeout = 30m
       |akka.http.client.parsing.max-content-length = infinite
       |akka.http.host-connection-pool.client.idle-timeout = infinite
     """.stripMargin)

@@ -21,7 +21,13 @@ lazy val tcpStreams = (project in file("tcp-streams"))
 
 lazy val httpStreams = (project in file("http-streams"))
   .settings(
-    libraryDependencies ++= httpStreamsDeps
+    libraryDependencies ++= httpStreamsDeps,
+    libraryDependencies += Cinnamon.library.cinnamonCHMetrics,
+    libraryDependencies += Cinnamon.library.cinnamonAkka,
+    libraryDependencies += Cinnamon.library.cinnamonAkkaHttp,
+    cinnamon in run := true,
+    cinnamon in test := true,
+    cinnamonLogLevel := "INFO"
   )
 
 lazy val syncExamples = (project in file("sync-examples"))
@@ -40,8 +46,8 @@ lazy val presentation = (project in file("presentation"))
   .enablePlugins(TutPlugin)
 
 lazy val akkaStreams = (project in file("akka-streams"))
-    .settings(
-      libraryDependencies ++= tcpStreamsDeps
-    )
+  .settings(
+    libraryDependencies ++= tcpStreamsDeps
+  )
 
 

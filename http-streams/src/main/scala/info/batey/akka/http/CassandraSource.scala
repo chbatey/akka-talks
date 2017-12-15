@@ -9,8 +9,7 @@ import scala.util.{Failure, Success, Try}
 
 object CassandraSource {
   def apply(statement: Statement)(implicit session: Session) = {
-    // Set small so we can see how flow control affects
-    // the access to Cassandra
+    // This makes it very obvious when we start/stop querying Cassandra
     statement.setFetchSize(10)
     Source.fromGraph(new CassandraSource(statement, session))
   }
@@ -27,7 +26,7 @@ final class CassandraSource(statement: Statement, session: Session) extends Grap
 
       override def preStart(): Unit = {
         implicit val ec = materializer.executionContext
-        fetchCB = getAsyncCallback[Try[ResultSet]](tryPush)
+        fetchCB = getAsyncCallback[Try[ResultSet]](newCassandraResponse)
         session.executeAsync(statement).asScala.onComplete(fetchCB.invoke)
       }
 
@@ -36,31 +35,34 @@ final class CassandraSource(statement: Statement, session: Session) extends Grap
         new OutHandler {
           override def onPull(): Unit = {
             implicit val ec = materializer.executionContext
-            lastResult match {
-              case Some(rs) if rs.getAvailableWithoutFetching > 0 =>
-                push(out, rs.one())
-              case Some(rs) if rs.isExhausted =>
-                completeStage()
-              case Some(rs) =>
-                log.info("Fetching more results from Cassandra")
-                rs.fetchMoreResults().asScala.onComplete(fetchCB.invoke)
-              case None =>
-            }
+            tryPush()
           }
         }
       )
 
-      private def tryPush(resultSet: Try[ResultSet]): Unit = resultSet match {
-        case Success(rs) =>
-          lastResult = Some(rs)
-          if (rs.getAvailableWithoutFetching > 0) {
-            if (isAvailable(out)) {
-              push(out, rs.one())
-            }
-          } else {
+      private def tryPush(): Unit = {
+        implicit val ec = materializer.executionContext
+        lastResult match {
+          case Some(rs) if rs.getAvailableWithoutFetching == 0 =>
+            log.info("Fetching more results from Cassandra")
+            rs.fetchMoreResults().asScala.onComplete(fetchCB.invoke)
+          case Some(rs) if rs.isExhausted =>
             completeStage()
-          }
-        case Failure(failure) => failStage(failure)
+          case Some(rs) if isAvailable(out) =>
+            push(out, rs.one())
+            tryPush()
+          case _ =>
+        }
+      }
+
+      private def newCassandraResponse(resultSet: Try[ResultSet]): Unit = {
+        resultSet match {
+          case Success(rs) =>
+            lastResult = Some(rs)
+            tryPush()
+          case Failure(failure) =>
+            failStage(failure)
+        }
       }
     }
 }

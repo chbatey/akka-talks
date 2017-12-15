@@ -9,7 +9,7 @@ import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
-import info.batey.akka.http.Domain.User
+import info.batey.akka.http.Domain.{Event, User}
 import spray.json._
 
 import scala.concurrent.Future
@@ -37,7 +37,7 @@ trait UserRoute {
     }
 
   val streamingRoute = path("user" / "tracking" / Segment) { name: String =>
-    val source: Source[Domain.Event, NotUsed] = DataAccess.lookupEvents(name)
+    val source: Source[Event, NotUsed] = DataAccess.lookupEvents(name)
     val asJson: Source[ByteString, NotUsed] = source.map(e =>
       ByteString(s"${e.toJson.toString()}\n", StandardCharsets.UTF_8))
 
