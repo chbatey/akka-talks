@@ -6,13 +6,14 @@ lazy val root = (project in file("."))
       // Same as:
       // organization in ThisBuild := "com.example"
       organization := "info.batey.akka",
-      scalaVersion := "2.12.4",
+      name := "backpressure-talk",
+      scalaVersion := "2.12.5",
       version := "0.1.0-SNAPSHOT"
     )))
   .settings(
     name := "akka-streams"
   )
-  .aggregate(tcpStreams)
+  .aggregate(tcpStreams, httpStreams, syncExamples, presentation, presentationParadox, akkaStreams)
 
 lazy val tcpStreams = (project in file("tcp-streams"))
   .settings(
@@ -21,13 +22,7 @@ lazy val tcpStreams = (project in file("tcp-streams"))
 
 lazy val httpStreams = (project in file("http-streams"))
   .settings(
-    libraryDependencies ++= httpStreamsDeps,
-    libraryDependencies += Cinnamon.library.cinnamonCHMetrics,
-    libraryDependencies += Cinnamon.library.cinnamonAkka,
-    libraryDependencies += Cinnamon.library.cinnamonAkkaHttp,
-    cinnamon in run := true,
-    cinnamon in test := true,
-    cinnamonLogLevel := "INFO"
+    libraryDependencies ++= httpStreamsDeps
   )
 
 lazy val syncExamples = (project in file("sync-examples"))
@@ -44,6 +39,14 @@ lazy val presentation = (project in file("presentation"))
     watchSources ++= (tutSourceDirectory.value ** "*.html").get
   )
   .enablePlugins(TutPlugin)
+
+lazy val presentationParadox = (project in file("presentation-paradox"))
+  .dependsOn(tcpStreams, httpStreams, syncExamples)
+  .settings(
+    paradoxGroups := Map("Language" -> Seq("Scala", "Java")),
+    paradoxProperties += ("selectedLanguage" → sys.env.getOrElse("PARADOX_LANGUAGE", "Java"))
+  ).enablePlugins(GatlingPlugin).enablePlugins(ParadoxRevealPlugin)
+
 
 lazy val akkaStreams = (project in file("akka-streams"))
   .settings(

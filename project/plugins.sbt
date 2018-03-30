@@ -1,3 +1,5 @@
-addSbtPlugin("com.lightbend.cinnamon" % "sbt-cinnamon" % "2.7.0-SNAPSHOT")
-
-addSbtPlugin("org.tpolecat" % "tut-plugin" % "0.5.6")
+addSbtPlugin("org.tpolecat" % "tut-plugin" % "0.6.4")
+addSbtPlugin("io.spray" % "sbt-revolver" % "0.9.1")
+addSbtPlugin("com.lightbend.paradox" % "sbt-paradox" % "0.3.3")
+addSbtPlugin("net.bzzt" % "sbt-paradox-reveal-js" % "0.4")
+addSbtPlugin("io.gatling" % "gatling-sbt" % "2.2.2")

@@ -5,6 +5,8 @@ object Domain {
   type EventPayload = String
   type Name = String
 
-  case class User(userId: UserId, name: Name, age: Int)
+  case class User(userId: UserId, name: Name, age: Int) {
+    def serialise: String = toString
+  }
   case class Event(userId: UserId, time: Long, info: EventPayload)
 }

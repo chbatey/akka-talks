@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<head>
+
     <title>Responsive, back pressured services using Akka</title>
     <meta charset="utf-8">
     <style>
@@ -76,7 +76,6 @@ Lightbend
     * Akka-streams
     * Akka-http
     * Akka persistence for Apache Cassandra
-    * Alpakka
 
 ???
 - Building services rather than libraries/frameworks
@@ -230,7 +229,7 @@ def post(request: HttpRequest): HttpResponse = {
    // 5 millis to 10 seconds?
    val user: User = getUserFromDatabase(userId)
 
-   // 5 milliss to 10 seconds?
+   // 5 millis to 10 seconds?
    ExternalService.sendPresentToUser(user)
 
    HttpResponse(200)

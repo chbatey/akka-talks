@@ -19,9 +19,11 @@ import scala.util.{Failure, Success}
 trait UserRoute {
 
   import JsonProtocol._
+
   implicit val mat: ActorMaterializer
 
   val userRoute =
+  //#user-route
     path("user" / Segment) { name =>
       get {
         withRequestTimeout(500.millis) {
@@ -31,18 +33,22 @@ trait UserRoute {
             case Success(Some(u)) => complete(u)
             case Failure(t) => complete(StatusCodes.InternalServerError, t.getMessage)
           }
-
         }
       }
     }
+  //#user-route
 
+  //#stream-route
   val streamingRoute = path("user" / "tracking" / Segment) { name: String =>
-    val source: Source[Event, NotUsed] = DataAccess.lookupEvents(name)
+    val source: Source[Event, NotUsed] =
+      DataAccess.lookupEvents(name)
     val asJson: Source[ByteString, NotUsed] = source.map(e =>
-      ByteString(s"${e.toJson.toString()}\n", StandardCharsets.UTF_8))
+      ByteString(s"${e.toJson.toString()}\n",
+        StandardCharsets.UTF_8))
 
     complete(HttpEntity(ContentTypes.`application/json`, asJson))
   }
+  //#stream-route
 
   val route: Route = streamingRoute ~ userRoute
 }

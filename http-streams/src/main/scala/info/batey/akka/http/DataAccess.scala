@@ -2,6 +2,7 @@ package info.batey.akka.http
 
 import akka.NotUsed
 import akka.stream.ActorMaterializer
+import akka.stream.alpakka.cassandra.scaladsl.CassandraSource
 import akka.stream.scaladsl.Source
 import com.datastax.driver.core.utils.UUIDs
 import com.datastax.driver.core.{Cluster, ResultSet, SimpleStatement}
@@ -21,6 +22,7 @@ object DataAccess extends LazyLogging {
     * An example of a call to Cassandra that will return one row. No need
     * to stream, a Future will do.
     */
+  //#db-call
   def lookupUser(userId: UserId): Future[Option[User]] =
     session.executeAsync("select * from users where user_id = ?", userId).asScala
       .map((rs: ResultSet) => Option(rs.one())
@@ -28,6 +30,7 @@ object DataAccess extends LazyLogging {
           row.getString("user_id"),
           row.getString("user_name"),
           row.getInt("age"))))
+  //#db-call
 
   /**
     * Example of a call to Cassandra that could return billions of rows.
@@ -48,6 +51,7 @@ object DataAccess extends LazyLogging {
     * Example of a call to Cassandra that could return billions of rows.
     * Uses streams to pull results from Cassandra as here is demand.
     */
+  //#lookup
   def lookupEvents(userId: UserId)(implicit ec: ActorMaterializer): Source[Event, NotUsed] = {
     CassandraSource(new SimpleStatement("select * from user_tracking where user_id = ?", userId))(session)
       .map(row => Event(

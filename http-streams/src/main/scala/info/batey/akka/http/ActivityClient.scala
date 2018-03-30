@@ -21,19 +21,20 @@ trait ActivityClient {
   implicit val ec: ExecutionContext
 
   def eventsForUser(userId: String): Future[Source[Event, NotUsed]] = {
-
+    //#client-request
     val response: Future[HttpResponse] = Http().singleRequest(
       HttpRequest(uri = s"http://localhost:8080/user/tracking/$userId")
     )
-
+    //#client-request
+    //#client
     response.map {
       case HttpResponse(StatusCodes.OK, headers, entity, _) =>
-        val responseBytes: Source[ByteString, Any] = entity.dataBytes
-
-        responseBytes.via(Framing.delimiter(
+        val response: Source[ByteString, Any] = entity.dataBytes
+        response.via(Framing.delimiter(
           ByteString("\n"), maximumFrameLength = 100, allowTruncation = true))
           .map(_.utf8String.parseJson.convertTo[Event])
           .mapMaterializedValue(_ => NotUsed)
     }
+    //#client
   }
 }
