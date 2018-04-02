@@ -7,7 +7,7 @@ import static info.batey.sync.WebFramework.*;
 
 public class SyncWebFramework {
   //#sync-post
-  private HttpResponse post(HttpRequest request) {
+  HttpResponse post(HttpRequest request) {
     String userId = request.getQueryParam("userId");
     Domain.User user = getUserFromDatabase(userId);
     ExternalService.sendPresentToUser(user);

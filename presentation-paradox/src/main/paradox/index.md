@@ -2,27 +2,17 @@
 
 ### Responsive, back-pressured services with Akka 
 
-##### Christopher Batey
-
-@@@
-
-@@@section
-
-## About me
-
-* Christopher Batey
-* Work @ Lightbend on the Akka team
-    * Akka
-    * Akka Streams
-    * Akka Http
-    * Akka Persistence for Apache Cassandra
+##### Christopher Batey 
+##### @chbatey
 
 @@@@notes
 
-Notes
+* Me
+* Lightbend: Scala, Akka, Play
+* Responsive systems using async, resource efficient
+* Scalable systems that behave well under load
 
 @@@@
-
 
 @@@
 
@@ -40,9 +30,14 @@ Actor model
 
 @span[Streams]{ .fragment }
 
-@span[[Reactive Manifesto](https://www.reactivemanifesto.org)]{ .fragment }
+@@@@notes
 
-@notes[So the actor is the basic building block in Akka, but the library contains more: it turned out that the abstractions for concurrency and resiliency in the actor model lend themselves very well for modelling distributed systems, so Akka grew modules for clustering, persistence, and a HTTP stack.<br>Excellent fit for building systems that have the properties of the Reactive Manifesto]
+* Core; actor based concurrency
+* Distribution and location transparency
+* HTTP and streams, reactive streams
+
+@@@@
+
 
 @@@
 
@@ -50,16 +45,35 @@ Actor model
 @@@section
 
 ## Responsive
-## Scalable
+
+* For a single request
+* Remain responsive under load
 
 @@@@notes
 
-- High level goals
-- Everyone: Responsive even for low throughput
-- Scalable for those who need it
+* Hanging, crashing vs being slow
+* Capacity planned to 1000 concurrent requests
+* Sized your hear to 2GB
+
+@@@@
+
+
+@@@
+
+
+@@@section
+
+## Scalable
+
+* Single process scalability or resource efficiency
+* Multi node scalability
+
+@@@@notes
+
+- Scalable for those who need it. E.g. 5TPS on a huge box
 - Scalable in process: Execution model appropriate
-- Scalable across machines
 - Resource efficiency
+- Scalable across machines
 
 
 @@@@
@@ -69,17 +83,37 @@ Actor model
 @@@section
 
 ## Asynchronous
-## Back pressured
+
+* Programming model
+    * CompletableFuture from the JDK
+    * Scala Futures
+    * Actors and Streams from Akka
+    * Observables and Flowables from RxJava
+* Network 
+    * Does a request over the network use a Thread?
+
 
 @@@@notes
 
-- Techniques to achieve the goals
-- Different/better techniques?
-- Async
-  - Remaining responsive
-- Back pressure/FlowControl
-  - Dealing with components that run at different speeds
-  - Much more important when moving away from thread per request
+* How many threads do you need to service a 1000 concurrent requests?
+* Async programming model vs actually async all the way down
+
+@@@@
+
+@@@
+
+@@@section
+
+## Back pressure
+
+* How do we stop a fast producer overloading a slow consumer?
+* How is demand signalled?
+* How do we prevent bring data from a database at a faster rate than the client can consumer?
+
+@@@@notes
+
+* Dealing with components that run at different speeds
+* Much more important when moving away from thread per request
 
 @@@@
 
@@ -88,22 +122,13 @@ Actor model
 
 @@@section
 
-## Goals
+## Presentation take aways
 
 * What does async give us?
 * What does flow control give us?
+* What is the reactive streams specification?
 * Flow control with Akka streams
 * Http Client -> TCP -> Http Server -> TCP -> Apache Cassandra (slow client)
-
-@@@@notes
-
-- Takeaways for this presentation
-- Flow control in your application and between them
-- TCP windowing, receive and send buffers, akka streams
-- Big point: If the client slows down we stop fetching results
-  from the database. No wasted effort. Constant memory footprint
-
-@@@@
 
 @@@
 
@@ -114,7 +139,13 @@ Actor model
 * HTTP Service, endpoints for:
     * User information from database
     * Getting user activity over a large time span
-    * Constant memory footprint
+
+@@@@notes
+
+* Small request vs large request
+
+@@@@
+
 @@@
 
 @@@section
@@ -125,17 +156,11 @@ Actor model
 * Don't do any unnecessary work
 * Constant memory footprint
 
-@@@
+@@@@notes
 
+* Resource efficiency/scalability 
 
-@@@section
-
-## Responsiveness
-* Control over when your application responds
-    * Service time vs response time
-    * Queues and buffers
-* Dependencies
-    * Don't make their problem your problem
+@@@@
 
 @@@
 
@@ -143,18 +168,33 @@ Actor model
 
 <img src="response-time.png" style="width: 1000px;"/>
 
+@@@@notes
+
+* Control over when your application responds
+    * Service time vs response time
+    * Queues and buffers
+* Dependencies
+    * Don't make their problem your problem
+
+
+@@@@
+
 @@@
 
 @@@section
 
 ## Execution Models 
 
+@@@@notes
+
+* Thread per request, hystrix
+* Future based programming
+* Akka stream based programming
+
+@@@@
+
+
 @@@
-
-
-
-
-
 
 @@@section
 
@@ -164,8 +204,11 @@ Actor model
 
 @@snip[Synchronous.java]($root$/../http-streams/src/main/java/rs/async/Synchronous.java){#perform}
 
+@@@@notes
 
-@notes[As a refresher on the advantages of async code I have a tiny example. This should look familiar to most of you, right? a number of tasks are performed by a service]
+* Network vs compute
+
+@@@@
 
 @@@
 
@@ -178,7 +221,10 @@ Actor model
 
 @@@@notes
 
-Notes
+ 
+* JAX-RS, Spring
+* Probably got some annotations for serialisation
+* Inherently not scalable
 
 @@@@
 
@@ -192,12 +238,11 @@ Notes
 
 @@@@notes
 
-Notes
+* TCP connection/receive timeouts
 
 @@@@
 
 @@@
-
 
 @@@section
 
@@ -213,15 +258,9 @@ Notes
 
 @@@@notes
 
-Same trivial snippet in Actor. Main diff: task in mailbox. Saves threads.
-
-Resilience. Back a slide, highlight the sending thread no longer has to deal with the exception
-
-Coordination also much easier when using message passing
-
-Nothing new: smalltalk, erlang
-
-Note: there are of course many ways to make a system asynchronous, and I'm sure many of you have introduced asynchronous boundaries on your own perhaps even with using a library. Actors are just a particularly nice way to achieve it.
+* Task in mailbox. Saves threads.
+* Resilience. Back a slide, highlight the sending thread no longer has to deal with the exception
+* Just one way to make this async
 
 @@@@
 
@@ -243,7 +282,9 @@ Note: there are of course many ways to make a system asynchronous, and I'm sure 
 
 @@@@notes
 
-Notes
+* Rather than
+* This function completes right away. Web framework then puts a callback on the future
+* How do we decide how many concurrent requests we can handle?
 
 @@@@
 
@@ -253,12 +294,12 @@ Notes
 
 @@snip[SynWebService.scala]($root$/../sync-examples/src/main/scala/info/batey/sync/SyncWebFramework.scala){#async-request group="scala"}
 
-
 @@snip[x]($root$/../sync-examples/src/main/java/jdoc/info/batey/sync/AsyncWebFramework.java){#async-request2 group="java"}
 
 @@@@notes
 
-Notes
+* thenCompose - chain on another async comp
+* thenApply - transform the result once it is complete
 
 @@@@
 
@@ -281,6 +322,13 @@ Notes
 
 @@snip[x]($root$/../http-streams/src/main/scala/info/batey/akka/http/UserRoute.scala){#user-route }
 
+@@@@notes
+
+* Future rather than a sync method call
+ * We can easily add a timeout that Akka HTTP can handle
+
+@@@@
+
 @@@
 
 
@@ -293,7 +341,7 @@ Notes
 
 @@@@notes
 
-Notes
+* Quick look at what an async call to a DB might look like
 
 @@@@
 
@@ -315,11 +363,11 @@ Notes
 
 # Playing fair
 
-@@@@notes
+@@@
 
-Notes
+@@@section
 
-@@@@
+<img src="response-time.png" style="width: 1000px;"/>
 
 @@@
 
@@ -327,7 +375,11 @@ Notes
 
 # @span[OutOfMemoryError]{.orange .fragment}
 
-@notes[Akka is by no means the only approach to asynchronous programming: Node.js, RxJava for example also exploring the same space. And they all ran into the problem of message targets not being able to keep up. Not impossible to solve, but solutions (e.g. ack'ing etc) ad hoc and not composable. This lead to a number of players in industry identifying the need for an interoperable mechanism to get asynchronous, backperssured streams: the Reactive Streams initiative]
+@@@@notes
+
+* Reactive streams
+
+@@@@
 
 @@@
 
@@ -353,6 +405,8 @@ Notes
 
 @@@@notes
 
+* Assumption that kafka never fills up
+* Can't do this for in memory, can't do this for requests between services
 * Would this work in memory?
 * Why produce data no one is ready to consume?
 
@@ -404,6 +458,13 @@ Notes
 
 @@snip[x]($root$/../http-streams/src/main/scala/rs/async/Asynchronous.scala){#enqueue group="scala"}
 
+@@@@notes
+
+* Async, thread efficiency
+* But now when do we stop?
+
+@@@@
+
 @@@
 
 
@@ -425,6 +486,12 @@ Notes
 Reactive Streams is an initiative to provide a standard for asynchronous stream processing with non-blocking back pressure. This encompasses efforts aimed at runtime environments (JVM and JavaScript) as well as network protocols
 
 http://www.reactive-streams.org
+
+@@@@notes
+
+* For communication between libraries
+
+@@@@
 
 @@@
 
@@ -581,6 +648,12 @@ Demand is signalled across async boundaries
 
 ![Backpressure across async boundary](images/backpressure-propagation.svg)
 
+@@@@notes
+
+* Upstream stages are not allowwed to do anything until downstream 
+
+@@@@
+
 @@@
 
 @@@section
@@ -613,7 +686,11 @@ Can be seen in e.g. wireshark:
 
 ![Wireshark backpressure](images/wireshark-fullwindow-2.png)
 
-@notes[and keeps heartbeating]
+@@@@notes
+
+Akka streams backpressure translating to TCP bacck pressurej
+
+@@@@
 
 @@@
 
@@ -638,6 +715,13 @@ Can be seen in e.g. wireshark:
 
 HTTP Client -> TCP -> Server -> HTTP Server -> TCP -> Apache Cassandra
 
+@@@@notes
+
+* Goal not to teach you Akka HTTP
+* But to show you the benefits of using a library which adheres to flow control
+
+@@@@
+
 @@@
 
 @@@section
@@ -646,7 +730,7 @@ HTTP Client -> TCP -> Server -> HTTP Server -> TCP -> Apache Cassandra
 
 * Akka HTTP client
 * Akka HTTP server
-*  Alpakka 
+* Alpakka 
 
 @@@@notes
 
@@ -670,7 +754,11 @@ Notes
 
 @@@@notes
 
-Notes
+* Important thing to note here is that the entity is a Source
+* There is a marshalling toolkit
+* Remember the rule,  source can't produce data uness sink demands it
+* Until you start consuming the source with a sink, nothing happens (apart from TCP buffers fill up)
+
 
 @@@@
 
@@ -704,7 +792,11 @@ val bound: Future[Http.ServerBinding] =
 
 @@@@notes
 
-Notes
+* You provide a source
+* Data is not pulled from the source UNTIL there is space in the TCP send buffer
+* IF the buffer fills up, we stop reuquesting
+* Meaning that we should stop pulling data from the database
+* Compare that to the sync model
 
 @@@@
 
