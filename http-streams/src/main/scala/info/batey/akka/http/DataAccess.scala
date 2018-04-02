@@ -2,7 +2,6 @@ package info.batey.akka.http
 
 import akka.NotUsed
 import akka.stream.ActorMaterializer
-import akka.stream.alpakka.cassandra.scaladsl.CassandraSource
 import akka.stream.scaladsl.Source
 import com.datastax.driver.core.utils.UUIDs
 import com.datastax.driver.core.{Cluster, ResultSet, SimpleStatement}
@@ -58,11 +57,6 @@ object DataAccess extends LazyLogging {
         row.getString("user_id"),
         UUIDs.unixTimestamp(row.getUUID("time")),
         row.getString("event")))
-      .recover {
-        case e: Throwable =>
-          // TODO deal with failures
-          logger.error("Stream failed: ", e)
-          Event("This is not the event you are looking for", 1, "Oh no")
-      }
+      .log("CassandraSource")
   }
 }

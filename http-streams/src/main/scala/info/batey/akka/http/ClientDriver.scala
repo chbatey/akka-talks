@@ -37,12 +37,12 @@ object ClientDriver extends App with ActivityClient {
         Try {
           val request = StdIn.readLine().toInt
           println(s"Requesting " + request)
-          sub.request(request)
-          val results = sub.expectNextN(request)
-          println(results)
+          (0 until request) foreach { i =>
+            println(sub.requestNext())
+          }
         }
       }
     case Failure(t) =>
-      println("Darn" + t)
+      println("Darn, did you type a number??" + t)
   }
 }

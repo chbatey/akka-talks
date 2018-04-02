@@ -89,12 +89,14 @@ Actor model
     * Scala Futures
     * Actors and Streams from Akka
     * Observables and Flowables from RxJava
-* Network 
+* Network/IO
     * Does a request over the network use a Thread?
+    * Does accessing the file system use a Thread?
 
 
 @@@@notes
 
+* Typical synchronous thread per request programming model
 * How many threads do you need to service a 1000 concurrent requests?
 * Async programming model vs actually async all the way down
 
@@ -114,6 +116,7 @@ Actor model
 
 * Dealing with components that run at different speeds
 * Much more important when moving away from thread per request
+* Online television service, big football game
 
 @@@@
 
@@ -130,6 +133,13 @@ Actor model
 * Flow control with Akka streams
 * Http Client -> TCP -> Http Server -> TCP -> Apache Cassandra (slow client)
 
+@@@@notes
+
+* 10 minutes
+* So far just asked a lot of questions
+
+@@@@
+
 @@@
 
 @@@section
@@ -143,6 +153,8 @@ Actor model
 @@@@notes
 
 * Small request vs large request
+* Second is an unbounded response
+* Local Cassandra database with hundreds of millions of events, around .5 GB. Run with a small HEAP
 
 @@@@
 
@@ -159,6 +171,8 @@ Actor model
 @@@@notes
 
 * Resource efficiency/scalability 
+* Small heap. Even when using libraries designed for this it is easy to accidently
+pull everything into memory
 
 @@@@
 
@@ -170,9 +184,8 @@ Actor model
 
 @@@@notes
 
-* Control over when your application responds
-    * Service time vs response time
-    * Queues and buffers
+* Not just worry about the yellow bit
+* Slow client
 * Dependencies
     * Don't make their problem your problem
 
@@ -187,6 +200,7 @@ Actor model
 
 @@@@notes
 
+* Time for code and details, then demo
 * Thread per request, hystrix
 * Future based programming
 * Akka stream based programming
@@ -221,8 +235,10 @@ Actor model
 
 @@@@notes
 
- 
+* 15m 
 * JAX-RS, Spring
+* WOrks well for CPU bound tasks
+* Dropwizard with Jetty default # of threads is 1024
 * Probably got some annotations for serialisation
 * Inherently not scalable
 
@@ -353,7 +369,11 @@ Actor model
 
 @@@@notes
 
-Notes
+* Recap:
+    * Async allows us to use fewer threads
+    * Async allows us to respond even if the request isn't fished
+* HOWEVER:
+    * A new problem, when do we stop takig in requests?
 
 @@@@
 
