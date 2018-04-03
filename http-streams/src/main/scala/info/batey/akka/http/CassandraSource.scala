@@ -10,7 +10,7 @@ import scala.util.{Failure, Success, Try}
 object CassandraSource {
   def apply(statement: Statement)(implicit session: Session) = {
     // This makes it very obvious when we start/stop querying Cassandra
-    statement.setFetchSize(10)
+    statement.setFetchSize(100)
     Source.fromGraph(new CassandraSource(statement, session))
   }
 }

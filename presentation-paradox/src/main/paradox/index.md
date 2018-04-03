@@ -51,6 +51,7 @@ Actor model
 
 @@@@notes
 
+* 2.5 mins
 * Hanging, crashing vs being slow
 * Capacity planned to 1000 concurrent requests
 * Sized your hear to 2GB
@@ -114,7 +115,11 @@ Actor model
 
 @@@@notes
 
+* 8 mins
 * Dealing with components that run at different speeds
+* Accepting connections vs how our database is responding
+* How quickly do we pull data from a database when it is unbounded?
+* Default is to not take it into consideration
 * Much more important when moving away from thread per request
 * Online television service, big football game
 
@@ -137,6 +142,7 @@ Actor model
 
 * 10 minutes
 * So far just asked a lot of questions
+* 45 mins on the talk, then 15 mins of demo.
 
 @@@@
 
@@ -152,6 +158,7 @@ Actor model
 
 @@@@notes
 
+* 11 mins
 * Small request vs large request
 * Second is an unbounded response
 * Local Cassandra database with hundreds of millions of events, around .5 GB. Run with a small HEAP
@@ -171,6 +178,9 @@ Actor model
 @@@@notes
 
 * Resource efficiency/scalability 
+* Dont pull large amounts from database if the client isn't reading it
+* Don't continue computations
+* Easier if synchronous, as thead can become blocked
 * Small heap. Even when using libraries designed for this it is easy to accidently
 pull everything into memory
 
@@ -184,6 +194,7 @@ pull everything into memory
 
 @@@@notes
 
+* 14 mins
 * Not just worry about the yellow bit
 * Slow client
 * Dependencies
@@ -200,6 +211,7 @@ pull everything into memory
 
 @@@@notes
 
+* 15 minutes
 * Time for code and details, then demo
 * Thread per request, hystrix
 * Future based programming
@@ -219,42 +231,9 @@ pull everything into memory
 @@snip[Synchronous.java]($root$/../http-streams/src/main/java/rs/async/Synchronous.java){#perform}
 
 @@@@notes
-
+* Multiple tasks done after another?
+* Perhaps submit them to a thread pool? Very low level
 * Network vs compute
-
-@@@@
-
-@@@
-
-@@@section
-
-
-@@snip[SynWebService.scala]($root$/../sync-examples/src/main/scala/info/batey/sync/SyncWebFramework.scala){#sync-post group="scala"}
-
-@@snip[SynWebService.scala]($root$/../sync-examples/src/main/java/jdoc/info/batey/sync/SyncWebFramework.java){#sync-post group="java"}
-
-@@@@notes
-
-* 15m 
-* JAX-RS, Spring
-* WOrks well for CPU bound tasks
-* Dropwizard with Jetty default # of threads is 1024
-* Probably got some annotations for serialisation
-* Inherently not scalable
-
-@@@@
-
-@@@
-
-@@@section
-
-@@snip[SynWebService.scala]($root$/../sync-examples/src/main/scala/info/batey/sync/SyncWebFramework.scala){#sync-post-times group="scala"}
-
-@@snip[SynWebService.scala]($root$/../sync-examples/src/main/java/jdoc/info/batey/sync/SyncWebFramework.java){#sync-post-times group="java"}
-
-@@@@notes
-
-* TCP connection/receive timeouts
 
 @@@@
 
@@ -277,6 +256,41 @@ pull everything into memory
 * Task in mailbox. Saves threads.
 * Resilience. Back a slide, highlight the sending thread no longer has to deal with the exception
 * Just one way to make this async
+
+@@@@
+
+@@@
+
+@@@section
+
+
+@@snip[SynWebService.scala]($root$/../sync-examples/src/main/scala/info/batey/sync/SyncWebFramework.scala){#sync-post group="scala"}
+
+@@snip[SynWebService.scala]($root$/../sync-examples/src/main/java/jdoc/info/batey/sync/SyncWebFramework.java){#sync-post group="java"}
+
+@@@@notes
+
+* 18m 
+* JAX-RS, Spring
+* WOrks well for CPU bound tasks
+* Dropwizard with Jetty default # of threads is 1024
+* Probably got some annotations for serialisation
+* Inherently not scalable
+
+@@@@
+
+@@@
+
+@@@section
+
+@@snip[SynWebService.scala]($root$/../sync-examples/src/main/scala/info/batey/sync/SyncWebFramework.scala){#sync-post-times group="scala"}
+
+@@snip[SynWebService.scala]($root$/../sync-examples/src/main/java/jdoc/info/batey/sync/SyncWebFramework.java){#sync-post-times group="java"}
+
+@@@@notes
+
+* Very hard for sync to time a request out
+* TCP connection/receive timeouts
 
 @@@@
 
@@ -369,6 +383,7 @@ pull everything into memory
 
 @@@@notes
 
+* 25 mins
 * Recap:
     * Async allows us to use fewer threads
     * Async allows us to respond even if the request isn't fished
@@ -389,7 +404,15 @@ pull everything into memory
 
 <img src="response-time.png" style="width: 1000px;"/>
 
+@@@@notes
+
+* Actors - how many messages 
+* Futures - How many outstanding futures
+
+@@@@
+
 @@@
+
 
 @@@section { data-background-video="images/fishermen.mp4" }
 
@@ -461,7 +484,14 @@ pull everything into memory
 
 # Reactive Streams
 
-@notes[So let's start with Reactive Streams. To better understand the reactive streams initiative it makes sense to look at some history of there this effort came from<br>Time: 11:55]
+
+@@@@notes
+
+* 30 minutes
+* So let's start with Reactive Streams. To better understand the reactive streams initiative it makes sense to look at some history of there this effort came from
+
+@@@@
+
 
 @@@
 
@@ -552,7 +582,14 @@ No JDK9? No problem!
 
 # Akka Streams
 
-@notes[Before we start: hands up Java/Scala experience? Will show a bit of both.<br>Time: 12:05-12:10]
+@@@@notes
+
+* What is Akka streams for?
+* Async passing data. 
+* Data might come from DB, in process computation
+* Flow control is built in
+
+@@@@
 
 @@@
 
@@ -560,7 +597,15 @@ No JDK9? No problem!
 
 ![Source, Flow and Sink](images/stream-blocks.svg)
 
-@notes[starts of our story]
+@@@@notes
+
+* Async streaming pipeline
+* Akka HTTP treads HTTP as as stream
+* Data goes from a source to a sync
+* Demand goes the opposite way
+* Demand is the kind of things people used to build into Actors/Futures
+
+@@@@
 
 @@@
 
@@ -570,7 +615,15 @@ No JDK9? No problem!
 @@snip[x]($root$/../http-streams/src/main/java/streams/Intro.java){#flow-no .fragment}
 @@snip[x]($root$/../http-streams/src/main/java/streams/Intro.java){#sink-no .fragment}
 
-@notes[Before we dive into the specifics, let's start with some small examples to get a feel]
+@@@@notes
+
+* Before we dive into the specifics, let's start with some small examples to get a feel
+* Not brought into memory
+* Sink receives each element then it can be garbage collected
+* Types coming next
+
+
+@@@@
 
 @@@
 
@@ -582,6 +635,14 @@ No JDK9? No problem!
 @@snip[x]($root$/../http-streams/src/main/java/streams/Intro.java){#graph .fragment}
 @@snip[x]($root$/../http-streams/src/main/java/streams/Intro.java){#run .fragment}
 
+@@@@notes
+
+* All just reuseable recipes
+* Implemented under the covers using actors
+* Flow control built in
+
+@@@@
+
 @@@
 
 @@@section
@@ -591,6 +652,12 @@ No JDK9? No problem!
 @@snip[x]($root$/../http-streams/src/main/scala/streams/Intro.scala){#sink}
 @@snip[x]($root$/../http-streams/src/main/scala/streams/Intro.scala){#graph .fragment}
 @@snip[x]($root$/../http-streams/src/main/scala/streams/Intro.scala){#run .fragment}
+
+@@@@notes
+
+b
+
+@@@@
 
 @@@
 
@@ -604,8 +671,11 @@ Scala:
 
 @@snip[x]($root$/../http-streams/src/main/scala/streams/Intro.scala){#short}
 
-@notes[we really try to make the API really easy to use for Java and Scala]
+@@@@notes
 
+* Effort has gone into making the Java/Scala API very similar
+
+@@@@
 
 @@@
 
@@ -617,7 +687,12 @@ Scala:
 
 @@snip[x]($root$/../http-streams/src/main/scala/streams/Materialization.scala){#multiple group="scala"}
 
-@notes[running = 2-stage: build graph, run graph. run = materialization. Same graph can be materialized multiple times.]
+@@@@notes
+
+* Run multiple times
+* E.g. each time a request comes into your app
+
+@@@@
 
 @@@
 
@@ -632,7 +707,13 @@ Scala:
 
 ![Source, Flow and Sink](images/stream-unfused.svg)
 
-@notes[Advantage of 2-phase: reusable building blocks, but opportunity for optimizations at materialization time]
+@@@@notes
+
+* Each stage in your pipeline can become an actor
+* Fusing. Single actor
+* Downside is there is no parallelism as elements go through stream
+
+@@@@
 
 @@@
 
@@ -658,6 +739,12 @@ Scala:
 
 ![Source, Flow and Sink](images/stream-async.svg)
 
+@@@@notes
+
+* Also happens when using an async comp in a state mapAsync
+
+@@@@
+
 @@@
 
 @@@section
@@ -670,6 +757,7 @@ Demand is signalled across async boundaries
 
 @@@@notes
 
+* Where does the flow control come in?
 * Upstream stages are not allowwed to do anything until downstream 
 
 @@@@
@@ -695,6 +783,12 @@ Often also possible across external protocols, i.e. TCP:
 ![TCP window](images/tcp-window-initial.png)
 
 @span[![TCP window](images/tcp-window-1.png)]{.fragment}
+
+@@@@notes
+
+* Demo will show the flow control in Akka streams going into TCP
+
+@@@@
 
 @@@
 
@@ -841,7 +935,9 @@ CassandraSource(new SimpleStatement(
 
 @@@@notes
 
-Notes
+This source is built into Alpakka that
+listens to demand and only pulls rows
+from the database when you request them
 
 @@@@
 
