@@ -3,6 +3,7 @@ package info.batey.akka.http
 import java.nio.charset.StandardCharsets
 
 import akka.NotUsed
+import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
@@ -20,7 +21,37 @@ trait UserRoute {
 
   import JsonProtocol._
 
+  implicit val system: ActorSystem
   implicit val mat: ActorMaterializer
+
+  val userRouteNoCass =
+    path("user-no-cass" / Segment) { name =>
+      get {
+        withRequestTimeout(500.millis) {
+          val user: Future[Option[User]] = DataAccess.loopupUserStub(name)
+          onComplete(user) {
+            case Success(None) => complete(StatusCodes.NotFound)
+            case Success(Some(u)) => complete(u)
+            case Failure(t) => complete(StatusCodes.InternalServerError, t.getMessage)
+          }
+        }
+      }
+    }
+
+   val userRouteBlocking =
+    path("user-blocking" / Segment) { name =>
+      get {
+        withRequestTimeout(500.millis) {
+          val user: Future[Option[User]] = DataAccess.loopupUserBlocking(name)
+          onComplete(user) {
+            case Success(None) => complete(StatusCodes.NotFound)
+            case Success(Some(u)) => complete(u)
+            case Failure(t) => complete(StatusCodes.InternalServerError, t.getMessage)
+          }
+        }
+      }
+    }
+
 
   val userRoute =
   //#user-route
@@ -50,5 +81,5 @@ trait UserRoute {
   }
   //#stream-route
 
-  val route: Route = streamingRoute ~ userRoute
+  val route: Route = streamingRoute ~ userRoute ~ userRouteNoCass ~ userRouteBlocking
 }

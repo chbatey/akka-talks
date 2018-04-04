@@ -1,6 +1,7 @@
 package info.batey.akka.http
 
 import akka.NotUsed
+import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.Source
 import com.datastax.driver.core.utils.UUIDs
@@ -10,12 +11,31 @@ import info.batey.akka.http.Domain.{Event, User, UserId}
 
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Future, Promise}
+import scala.concurrent.duration._
 
 
 object DataAccess extends LazyLogging {
   val cluster = Cluster.builder().addContactPoint("localhost").build()
   val session = cluster.connect("akka_streams")
+
+  /*
+   * Used to test Akka HTTP without a local Cassandra. But still simulate
+   * response time
+   */
+  def loopupUserStub(userId: UserId)(implicit system: ActorSystem): Future[Option[User]] = {
+    val promise = Promise[Option[User]]()
+    system.scheduler.scheduleOnce(200.millis, new Runnable {
+      override def run(): Unit =
+        promise.success(Some(User(userId, "Christopher", 32)))
+    })
+    promise.future
+  }
+
+  def loopupUserBlocking(userId: UserId)(implicit system: ActorSystem): Future[Option[User]] = {
+    Thread.sleep(200)
+    Future.successful(Some(User(userId, "Christopher", 32)))
+  }
 
   /**
     * An example of a call to Cassandra that will return one row. No need
@@ -57,6 +77,5 @@ object DataAccess extends LazyLogging {
         row.getString("user_id"),
         UUIDs.unixTimestamp(row.getUUID("time")),
         row.getString("event")))
-      .log("CassandraSource")
   }
 }

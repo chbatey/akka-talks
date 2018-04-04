@@ -42,3 +42,14 @@ the server needs to pull more from Cassandra where you'll see this log:
 
 You've just witnessed akka streams flow control spanning processes via TCP.
 
+
+### JVM args for Server App
+
+# To allow getting native memory stats for threads
+-XX:NativeMemoryTracking=summary
+# TO show we don't need much memory
+-Xmx256m 
+
+### Useful things for demo
+
+Gnome zoom - super alt 8

@@ -963,34 +963,6 @@ from the database when you request them
 
 @@@
 
-
-
-
-
-
-
-
-
-
-
-
-
-@@@section
-
-# Re-cap
-
-Backpressure prevents overload
-
-@span[Reactive Streams for integration]{.fragment}
-
-@span[e.g. Akka Streams to implement]{.fragment}
-
-@span[e.g. Akka HTTP to leverage]{.fragment}
-
-@notes[Backpressure protects against overloading the target of an asynchronous non-blocking stream. Reactive Streams makes this work end-to-end, use a library like Akka Streams, Akka HTTP is built on top of Akka Streams and benefits from it.]
-
-@@@
-
 @@@section
 
 ## Happy hAkking!
@@ -1011,11 +983,7 @@ Tweet
 
 @@@section
 
-@@@@notes
-
-Notes
-
-@@@@
+# Questions?
 
 @@@
 

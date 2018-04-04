@@ -9,16 +9,7 @@ import scala.concurrent.Future
 
 object ServerApp extends App with UserRoute {
 
-  val config = ConfigFactory.parseString(
-    """
-      |akka.log-level = DEBUG
-      |akka.http.client.idle-timeout = infinite
-      |akka.http.server.idle-timeout = infinite
-      |akka.http.client.parsing.max-content-length = infinite
-      |akka.http.host-connection-pool.client.idle-timeout = infinite
-    """.stripMargin)
-
-  implicit val system = ActorSystem("ServerApp", config)
+  implicit val system = ActorSystem("ServerApp")
   implicit val mat = ActorMaterializer()
   implicit val ec = system.dispatcher
 
