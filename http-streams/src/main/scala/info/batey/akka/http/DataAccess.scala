@@ -19,10 +19,10 @@ object DataAccess extends LazyLogging {
   val cluster = Cluster.builder().addContactPoint("localhost").build()
   val session = cluster.connect("akka_streams")
 
-  /*
-   * Used to test Akka HTTP without a local Cassandra. But still simulate
-   * response time
-   */
+  /**
+    * Used to test Akka HTTP without a local Cassandra. But still simulate
+    * response time
+    */
   def loopupUserStub(userId: UserId)(implicit system: ActorSystem): Future[Option[User]] = {
     val promise = Promise[Option[User]]()
     system.scheduler.scheduleOnce(200.millis, new Runnable {
@@ -32,6 +32,10 @@ object DataAccess extends LazyLogging {
     promise.future
   }
 
+  /**
+    * Used to simulate a blocking call. Will not work for a large number of concurrent requests.
+    * Don't do this at home.
+    */
   def loopupUserBlocking(userId: UserId)(implicit system: ActorSystem): Future[Option[User]] = {
     Thread.sleep(200)
     Future.successful(Some(User(userId, "Christopher", 32)))
@@ -53,7 +57,8 @@ object DataAccess extends LazyLogging {
 
   /**
     * Example of a call to Cassandra that could return billions of rows.
-    * This pulls them into memory. Don't do this.
+    * This pulls them into memory.
+    * Don't do this at home.
     */
   @deprecated("Sorry we did this", "always")
   def lookupEvents1(userId: UserId): Future[Seq[Event]] = {
@@ -78,4 +83,5 @@ object DataAccess extends LazyLogging {
         UUIDs.unixTimestamp(row.getUUID("time")),
         row.getString("event")))
   }
+  //#lookup
 }

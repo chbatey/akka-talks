@@ -91,8 +91,8 @@ Actor model
     * Actors and Streams from Akka
     * Observables and Flowables from RxJava
 * Network/IO
-    * Does a request over the network use a Thread?
-    * Does accessing the file system use a Thread?
+    * Network request use a Thread?
+    * File system request use a Thread?
 
 
 @@@@notes
@@ -109,9 +109,9 @@ Actor model
 
 ## Back pressure
 
-* How do we stop a fast producer overloading a slow consumer?
+* Fast producers overload slow consumers?
 * How is demand signalled?
-* How do we prevent bring data from a database at a faster rate than the client can consumer?
+* Rate of pulling data into memory from database?
 
 @@@@notes
 

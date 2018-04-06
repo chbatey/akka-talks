@@ -53,20 +53,16 @@ public class UserRoute extends AllDirectives {
 
   private Route userRoute() {
     return
-      //#user-route
       route(path(segment("user").slash(segment()), id ->
+        //#user-route
         get(() -> {
             CompletableFuture<Optional<User>> user =
               dataAccess.lookupUser(id);
-            return onSuccess(user, (Optional<User> opUser) -> {
-              if (opUser.isPresent()) {
-                return complete(opUser.get().serialise());
-              } else {
-                return complete(StatusCodes.NOT_FOUND);
-              }
-            });
+            return onSuccess(user, (Optional<User> opUser) ->
+              opUser.map(u -> complete(u.serialise()))
+                    .orElse(complete(StatusCodes.NOT_FOUND)));
           }
+        //#user-route
         )));
-    //#user-route
   }
 }

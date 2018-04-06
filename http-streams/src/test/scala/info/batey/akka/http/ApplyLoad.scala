@@ -12,15 +12,15 @@ class ApplyLoad extends Simulation {
   val scn = scenario("Basic load")
     .exec(http("request").get("/user/chbatey"))
 
-//  val scn = scenario("Basic load")
-//    .exec(http("request").get("/user-no-cass/chbatey"))
+  //  val scn = scenario("Basic load")
+  //    .exec(http("request").get("/user-no-cass/chbatey"))
 
 
   // Simulate users:
   //  setUp(scn.inject(rampUsers(40).over(10.seconds))
   //    .protocols(httpConf))
 
-  setUp(scn.inject(constantUsersPerSec(400).during(60.seconds))
+  setUp(scn.inject(
+    constantUsersPerSec(400).during(60.seconds))
     .protocols(httpConf))
-
 }

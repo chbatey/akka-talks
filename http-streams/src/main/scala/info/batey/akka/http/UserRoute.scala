@@ -53,6 +53,12 @@ trait UserRoute {
     }
 
 
+  /**
+    * Small request all async from incoming TCP socket to outgoing TCP socket
+    * to the database and then back again.
+    *
+    * Demonstrates: Async == Scalability
+    */
   val userRoute =
   //#user-route
     path("user" / Segment) { name =>
@@ -69,6 +75,11 @@ trait UserRoute {
     }
   //#user-route
 
+  /**
+    * Unbounded request. Might bring back large quantities from the database.
+    *
+    * Demonstrates: Flow control == No wasted work, constant memory footprint which enables scalability.
+    */
   //#stream-route
   val streamingRoute = path("user" / "tracking" / Segment) { name: String =>
     val source: Source[Event, NotUsed] =

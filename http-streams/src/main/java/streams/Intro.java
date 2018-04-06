@@ -46,7 +46,7 @@ public class Intro {
     //#short
     Source.range(0, 20000000)
       .map(Object::toString)
-      .runForeach(str -> System.out.println(str), materializer);
+      .runForeach(System.out::println, materializer);
     //#short
   }
 }
