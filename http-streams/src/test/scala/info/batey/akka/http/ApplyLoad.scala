@@ -5,6 +5,8 @@ import scala.concurrent.duration._
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 
+// What does a load test tool do?
+// Gatling vs JMeter
 class ApplyLoad extends Simulation {
   val httpConf = http.baseURL("http://localhost:8080").shareConnections
 

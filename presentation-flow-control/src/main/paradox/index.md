@@ -2,8 +2,8 @@
 
 ### Responsive, back-pressured services with Akka 
 
-##### Christopher Batey 
-##### @chbatey
+##### Christopher Batey (@chbatey)
+##### Software Engineer - Akka team
 
 @@@@notes
 
@@ -100,6 +100,7 @@ Actor model
 * Typical synchronous thread per request programming model
 * How many threads do you need to service a 1000 concurrent requests?
 * Async programming model vs actually async all the way down
+* Reminder: Asynchrony is about scalability. NOT latency
 
 @@@@
 
@@ -388,7 +389,7 @@ pull everything into memory
     * Async allows us to use fewer threads
     * Async allows us to respond even if the request isn't fished
 * HOWEVER:
-    * A new problem, when do we stop takig in requests?
+    * A new problem, when do we stop taking in requests?
 
 @@@@
 
@@ -430,7 +431,7 @@ pull everything into memory
 
 ## Queueing and/or buffering
 
-* How would this work if Kafka was between the services?
+* Kafka between things?
 
 ![queue](pubsub-half.png)
 

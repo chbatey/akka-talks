@@ -31,9 +31,7 @@ trait ActivityClient {
     //#client
     response.map {
       case HttpResponse(StatusCodes.OK, headers, entity, _) =>
-
         val response: Source[ByteString, _] = entity.dataBytes
-
         response.via(Framing.delimiter(
           ByteString("\n"), maximumFrameLength = 100, allowTruncation = true))
           .map(_.utf8String.parseJson.convertTo[Event])

@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "info.batey.akka";
+option java_outer_classname = "Greeter";
+
+package info.batey.akka;
+
+service GreeterService {
+    rpc SayHello (HelloRequest) returns (HelloReply) {}
+
+    rpc ItKeepsTalking (stream HelloRequest) returns (HelloReply) {}
+
+    rpc ItKeepsReplying (HelloRequest) returns (stream HelloReply) {}
+
+    rpc StreamHellos (stream HelloRequest) returns (stream HelloReply) {}
+}
+
+message HelloRequest {
+    string name = 1;
+}
+
+message HelloReply {
+    string message = 1;
+}

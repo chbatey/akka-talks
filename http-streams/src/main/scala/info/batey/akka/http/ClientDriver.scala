@@ -15,19 +15,19 @@ import scala.util.{Failure, Success, Try}
 
 object ClientDriver extends App with ActivityClient {
 
-  val config = ConfigFactory.parseString(
-    """
-      |akka.log-level = DEBUG
-      |akka.http.host-connection-pool.client.idle-timeout = infinite
-    """.stripMargin)
-
-  implicit val system = ActorSystem("ClientDriver", config)
+  implicit val system = ActorSystem("ClientDriver")
   implicit val mat = ActorMaterializer()
   implicit val ec = system.dispatcher
 
+  // Why is it a Future?
+  // Why is it a Source?
+  // This is one HTTP request
   val activity: Future[Source[Event, NotUsed]] = eventsForUser("chbatey")
 
+  // A "Test" Sink where you control the demand
   val testProbe = TestSink.probe[Event]
+
+  // Reminder: Wireshark/Mission control/ss
 
   activity.onComplete {
     case Success(source) =>
@@ -42,6 +42,6 @@ object ClientDriver extends App with ActivityClient {
         }
       }
     case Failure(t) =>
-      println("Darn, did you type a number??" + t)
+      println(s"Unable to connect to server. Did you start it Christopher??? ${t.getMessage}")
   }
 }

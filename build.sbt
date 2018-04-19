@@ -3,17 +3,15 @@ import Dependencies._
 lazy val root = (project in file("."))
   .settings(
     inThisBuild(List(
-      // Same as:
-      // organization in ThisBuild := "com.example"
-      organization := "info.batey.akka",
-      name := "backpressure-talk",
+      organization := "info.batey",
+      name := "akka-talks",
       scalaVersion := "2.12.5",
       version := "0.1.0-SNAPSHOT"
     )))
-  .settings(
-    name := "akka-streams"
-  )
-  .aggregate(tcpStreams, httpStreams, syncExamples, presentation, presentationParadox, akkaStreams)
+  .aggregate(tcpStreams, httpStreams, syncExamples, akkaStreams, akkaOverview,
+    presentationFlowControlTut,
+    presentationFlowControl,
+    presentationAkkaState)
 
 lazy val tcpStreams = (project in file("tcp-streams"))
   .settings(
@@ -31,7 +29,26 @@ lazy val syncExamples = (project in file("sync-examples"))
   )
   .dependsOn(httpStreams) //steal the domain classes
 
-lazy val presentation = (project in file("presentation"))
+
+lazy val akkaStreams = (project in file("akka-streams"))
+  .settings(
+    libraryDependencies ++= tcpStreamsDeps
+  )
+
+lazy val akkaOverview = (project in file("akka-overview"))
+  .settings(
+    libraryDependencies ++= akkaOverviewDeps
+  )
+
+lazy val akkaGrpcSample = (project in file("akka-grpc-sample"))
+  .settings(
+    libraryDependencies ++= akkaGrpcSampleDeps,
+    javaAgents += "org.mortbay.jetty.alpn" % "jetty-alpn-agent" % "2.0.7" % "runtime"
+  )
+  .enablePlugins(AkkaGrpcPlugin)
+  .enablePlugins(JavaAgent)
+
+lazy val presentationFlowControlTut = (project in file("presentation-flow-control-tut"))
   .dependsOn(tcpStreams, httpStreams, syncExamples)
   .settings(
     tutSourceDirectory := baseDirectory.value / "tut",
@@ -40,17 +57,32 @@ lazy val presentation = (project in file("presentation"))
   )
   .enablePlugins(TutPlugin)
 
-lazy val presentationParadox = (project in file("presentation-paradox"))
+lazy val presentationFlowControl = (project in file("presentation-flow-control"))
   .dependsOn(tcpStreams, httpStreams, syncExamples)
   .settings(
     paradoxGroups := Map("Language" -> Seq("Scala", "Java")),
-    paradoxProperties += ("selectedLanguage" → sys.env.getOrElse("PARADOX_LANGUAGE", "Java"))
-  ).enablePlugins(GatlingPlugin).enablePlugins(ParadoxRevealPlugin)
-
-
-lazy val akkaStreams = (project in file("akka-streams"))
-  .settings(
-    libraryDependencies ++= tcpStreamsDeps
+    paradoxProperties += ("selectedLanguage" → sys.env.getOrElse("PARADOX_LANGUAGE", "Scala"))
   )
+  .enablePlugins(GatlingPlugin)
+  .enablePlugins(ParadoxRevealPlugin)
+  .enablePlugins(ParadoxPlugin)
+
+lazy val presentationAkkaState = (project in file("presentation-akka-state"))
+  .settings(
+    paradoxGroups := Map("Language" -> Seq("Scala", "Java")),
+    paradoxProperties += ("selectedLanguage" → sys.env.getOrElse("PARADOX_LANGUAGE", "Scala"))
+  )
+  .enablePlugins(ParadoxRevealPlugin)
+  .enablePlugins(ParadoxPlugin)
+  .dependsOn(akkaOverview)
+
+//TODO port to paraodx
+lazy val presentationAkkaTyped = (project in file("presentation-akka-typed"))
+  .settings(
+    paradoxGroups := Map("Language" -> Seq("Scala", "Java")),
+    paradoxProperties += ("selectedLanguage" → sys.env.getOrElse("PARADOX_LANGUAGE", "Scala"))
+  )
+  .enablePlugins(ParadoxRevealPlugin)
+
 
 

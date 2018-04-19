@@ -14,7 +14,8 @@ object ServerApp extends App with UserRoute {
   implicit val ec = system.dispatcher
 
   //#bind
-  val bound: Future[Http.ServerBinding] = Http().bindAndHandle(route, "localhost", 8080)
+  val bound: Future[Http.ServerBinding] = Http().
+    bindAndHandle(route, "localhost", 8080)
   //#bind
 
   bound.onComplete(println)

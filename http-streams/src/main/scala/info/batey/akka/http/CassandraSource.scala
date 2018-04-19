@@ -44,7 +44,7 @@ final class CassandraSource(statement: Statement, session: Session) extends Grap
         implicit val ec = materializer.executionContext
         lastResult match {
           case Some(rs) if rs.getAvailableWithoutFetching == 0 =>
-            log.debug("Fetching more results from Cassandra")
+            log.info("Fetching more results from Cassandra")
             rs.fetchMoreResults().asScala.onComplete(fetchCB.invoke)
           case Some(rs) if rs.isExhausted =>
             completeStage()

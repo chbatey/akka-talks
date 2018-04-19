@@ -2,15 +2,22 @@ import sbt._
 
 object Dependencies {
 
-  val akkaVersion = "2.5.11"
-  val akkaHttpVersion = "10.1.0"
+  val akkaVersion = "2.5.12"
+
+  val akkaHttpVersion = "10.1.1+16-174a6949"
   val cassandraDriverVersion = "3.3.1"
   val log4jVersion = "2.9.1"
   val gatlingVersion = "2.3.0"
+  val akkaGrpcVersion = "e912aac4"
 
   val akkaStreams = "com.typesafe.akka" %% "akka-stream" % akkaVersion
+
+  val akkaTyped = "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion
+  val akkaClusterTyped = "com.typesafe.akka" %% "akka-cluster-typed" % akkaVersion
+  val akkaStreamsTyped = "com.typesafe.akka" %% "akka-stream-typed" % akkaVersion
+
   val akkaHttp = "com.typesafe.akka" %% "akka-http" % akkaHttpVersion
-  val akkaHttpSpray = "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.10"
+  val akkaHttpSpray = "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion
   val akkaStreamsContrib = "com.typesafe.akka" %% "akka-stream-contrib" % "0.8"
   val log4j2Api = "org.apache.logging.log4j" % "log4j-api" % log4jVersion
   val log4j2Core = "org.apache.logging.log4j" % "log4j-core" % log4jVersion % Runtime
@@ -28,14 +35,18 @@ object Dependencies {
   val akkaStreamsTestKit = "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion
   val akkaHttpTestKit = "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % Test
 
-  val tcpStreamsDeps: Seq[ModuleID] = Seq(
+  val tcpStreamsDeps = Seq(
     akkaStreams, akkaStreamsTestKit, akkaStreamsContrib
   )
 
-  val httpStreamsDeps: Seq[ModuleID] = tcpStreamsDeps ++ Seq(
+  val httpStreamsDeps = tcpStreamsDeps ++ Seq(
     akkaHttp, akkaHttpTestKit, akkaStreamsContrib, cassandraDriver, akkaHttpSpray,
     log4j2Api, log4j2Core, log4jSlf4J, typesafeLogging, alpakkaFtp, gatHighCharts, gatling, alpakkaCassandra
   )
+
+  val akkaOverviewDeps = Seq(akkaStreams, akkaHttp, akkaTyped, akkaStreamsTyped, akkaClusterTyped)
+
+  val akkaGrpcSampleDeps = Seq(akkaStreams, akkaHttp, akkaTyped, akkaStreamsTyped)
 
   val syncDeps: Seq[ModuleID] = Seq()
 }
