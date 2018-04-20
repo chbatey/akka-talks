@@ -84,7 +84,7 @@ lazy val presentationAkkaState = (project in file("presentation-akka-state"))
   )
   .enablePlugins(ParadoxRevealPlugin)
   .enablePlugins(ParadoxPlugin)
-  .dependsOn(akkaOverview, akkaTypedExamples, akkaClusterExample)
+  .dependsOn(akkaOverview, akkaTypedExamples, akkaClusterExample, akkaGrpcSample)
 
 //TODO port to paraodx
 lazy val presentationAkkaTyped = (project in file("presentation-akka-typed"))

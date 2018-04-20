@@ -395,13 +395,6 @@ TODO: Maybe put in sharding?
 
 @@@section
 
-TODO show flight recorder
-
-@@@
-
-
-@@@section
-
 ## Stream refs
 
 @span[Reactive streams over the network]{ .fragment }
@@ -480,6 +473,168 @@ Notes
 @@@@
 
 @@@
+
+@@@section
+
+
+![dc](images/grpc.svg)
+
+@@@@notes
+
+Notes
+
+@@@@
+
+@@@
+
+@@@section
+
+@@snip[x]($root$/../akka-grpc-sample/src/main/protobuf/GreeterService.proto){ #service }
+
+@@@@notes
+
+Notes
+
+@@@@
+
+@@@
+
+@@@section
+
+```scala
+new StreamObserver[T]() {
+  override def onNext(summary: T): Unit = { ... }
+  override def onError(t: T): Unit = { ... }
+  override def onCompleted(): Unit = { ... }
+}
+```
+@@@
+
+
+@@@section
+
+## Unary calls
+
+@@snip[x]($root$/../akka-grpc-sample/src/main/protobuf/GreeterService.proto){ #unary }
+@@snip[x]($root$/../akka-grpc-sample/src/main/scala/info/batey/akka/GreeterServiceImpl.scala){ #unary .fragment }
+
+@@@@notes
+
+Notes
+
+@@@@
+
+@@@
+
+@@@section
+
+## Client streaming
+
+@@snip[x]($root$/../akka-grpc-sample/src/main/protobuf/GreeterService.proto){ #stream-in }
+@@snip[x]($root$/../akka-grpc-sample/src/main/scala/info/batey/akka/GreeterServiceImpl.scala){ #stream-in .fragment }
+
+@@@@notes
+
+Notes
+
+@@@@
+
+@@@
+
+@@@section
+
+## Server streaming
+
+@@snip[x]($root$/../akka-grpc-sample/src/main/protobuf/GreeterService.proto){ #stream-out }
+@@snip[x]($root$/../akka-grpc-sample/src/main/scala/info/batey/akka/GreeterServiceImpl.scala){ #stream-out .fragment }
+
+@@@@notes
+
+Notes
+
+@@@@
+
+@@@
+
+@@@section
+
+## Stream both ways
+
+@@snip[x]($root$/../akka-grpc-sample/src/main/protobuf/GreeterService.proto){ #stream-both }
+@@snip[x]($root$/../akka-grpc-sample/src/main/scala/info/batey/akka/GreeterServiceImpl.scala){ #stream-both .fragment }
+
+@@@@notes
+
+Notes
+
+@@@@
+
+@@@
+
+@@@section
+
+@@snip[x]($root$/../akka-grpc-sample/src/main/scala/info/batey/akka/MainApp.scala){ #service }
+
+@@snip[x]($root$/../akka-grpc-sample/src/main/scala/info/batey/akka/MainApp.scala){ #binding .fragment }
+
+@@@@notes
+
+Notes
+
+@@@@
+
+@@@
+
+@@@section
+
+@@snip[x]($root$/../akka-grpc-sample/src/main/scala/info/batey/akka/MainApp.scala){ #client }
+
+@@snip[x]($root$/../akka-grpc-sample/src/main/scala/info/batey/akka/MainApp.scala){ #unary .fragment }
+
+@@snip[x]($root$/../akka-grpc-sample/src/main/scala/info/batey/akka/MainApp.scala){ #client-streaming .fragment }
+
+@@snip[x]($root$/../akka-grpc-sample/src/main/scala/info/batey/akka/MainApp.scala){ #streaming-both .fragment }
+
+@@@@notes
+
+Notes
+
+@@@@
+
+@@@
+
+@@@section
+
+## gRPC Summary
+
+* Very new!
+* HTTP2 only works with bindAndHandleAsync
+* Client uses Netty, will use Akka HTTP client soon
+
+@@@@notes
+
+Notes
+
+@@@@
+
+@@@
+
+@@@section
+
+## Summary
+
+* @span[Typed refinements]{ }
+* @span[Multi DC]{ }
+* @span[Artery TCP]{ }
+* @span[Stream Refs]{ }
+* @span[gRPC]{ }
+
+@@@
+
+
+
+
+
 
 
 

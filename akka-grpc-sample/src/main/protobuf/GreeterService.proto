@@ -6,15 +6,25 @@ option java_outer_classname = "Greeter";
 
 package info.batey.akka;
 
+//#service
 service GreeterService {
+    //#unary
     rpc SayHello (HelloRequest) returns (HelloReply) {}
+    //#unary
 
+    //#stream-in
     rpc ItKeepsTalking (stream HelloRequest) returns (HelloReply) {}
+    //#stream-in
 
+    //#stream-out
     rpc ItKeepsReplying (HelloRequest) returns (stream HelloReply) {}
+    //#stream-out
 
+    //#stream-both
     rpc StreamHellos (stream HelloRequest) returns (stream HelloReply) {}
+    //#stream-both
 }
+//#service
 
 message HelloRequest {
     string name = 1;
