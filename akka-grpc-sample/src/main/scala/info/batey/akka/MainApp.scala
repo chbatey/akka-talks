@@ -2,7 +2,7 @@ package info.batey.akka
 
 import akka.actor.ActorSystem
 import akka.grpc.GrpcClientSettings
-import akka.http.scaladsl.Http
+import akka.http.scaladsl.{ConnectionContext, Http, Http2}
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
 import akka.stream.scaladsl.Source
 import akka.stream.{ActorMaterializer, Materializer}
@@ -26,7 +26,7 @@ object MainApp extends App {
   val service: HttpRequest => Future[HttpResponse] = GreeterServiceHandler(new GreeterServiceImpl(mat))
     .orElse { case _ => Future.successful(HttpResponse(StatusCodes.NotFound)) }
 
-  Http().bindAndHandleAsync(service, interface = "127.0.0.1", port = 8080)
+  Http2().bindAndHandleAsync(service, "127.0.0.1", 8080, ConnectionContext.noEncryption())
     .foreach { binding =>
       println(s"gRPC server bound to: ${binding.localAddress}")
     }

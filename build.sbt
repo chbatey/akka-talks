@@ -13,6 +13,17 @@ lazy val root = (project in file("."))
     presentationFlowControl,
     presentationAkkaState)
 
+lazy val akkaTypedExamples = (project in file("akka-typed-sample"))
+  .settings(
+    libraryDependencies ++= akkaTypedDeps
+  )
+
+lazy val akkaClusterExample = (project in file("akka-cluster-sample"))
+  .settings(
+    libraryDependencies ++= akkaClusterDeps
+  )
+
+
 lazy val tcpStreams = (project in file("tcp-streams"))
   .settings(
     libraryDependencies ++= tcpStreamsDeps
@@ -28,7 +39,6 @@ lazy val syncExamples = (project in file("sync-examples"))
     libraryDependencies ++= syncDeps
   )
   .dependsOn(httpStreams) //steal the domain classes
-
 
 lazy val akkaStreams = (project in file("akka-streams"))
   .settings(
@@ -74,7 +84,7 @@ lazy val presentationAkkaState = (project in file("presentation-akka-state"))
   )
   .enablePlugins(ParadoxRevealPlugin)
   .enablePlugins(ParadoxPlugin)
-  .dependsOn(akkaOverview)
+  .dependsOn(akkaOverview, akkaTypedExamples, akkaClusterExample)
 
 //TODO port to paraodx
 lazy val presentationAkkaTyped = (project in file("presentation-akka-typed"))

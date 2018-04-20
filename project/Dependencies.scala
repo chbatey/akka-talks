@@ -8,12 +8,13 @@ object Dependencies {
   val cassandraDriverVersion = "3.3.1"
   val log4jVersion = "2.9.1"
   val gatlingVersion = "2.3.0"
-  val akkaGrpcVersion = "e912aac4"
+  val akkaGrpcVersion = "cbc0d9c6+20180419-1108"
 
   val akkaStreams = "com.typesafe.akka" %% "akka-stream" % akkaVersion
 
   val akkaTyped = "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion
   val akkaClusterTyped = "com.typesafe.akka" %% "akka-cluster-typed" % akkaVersion
+  val akkaClusterShardingTyped = "com.typesafe.akka" %% "akka-cluster-sharding-typed" % akkaVersion
   val akkaStreamsTyped = "com.typesafe.akka" %% "akka-stream-typed" % akkaVersion
 
   val akkaHttp = "com.typesafe.akka" %% "akka-http" % akkaHttpVersion
@@ -47,6 +48,10 @@ object Dependencies {
   val akkaOverviewDeps = Seq(akkaStreams, akkaHttp, akkaTyped, akkaStreamsTyped, akkaClusterTyped)
 
   val akkaGrpcSampleDeps = Seq(akkaStreams, akkaHttp, akkaTyped, akkaStreamsTyped)
+
+  val akkaTypedDeps = Seq(akkaTyped)
+
+  val akkaClusterDeps = Seq(akkaTyped, akkaClusterTyped, akkaClusterShardingTyped)
 
   val syncDeps: Seq[ModuleID] = Seq()
 }

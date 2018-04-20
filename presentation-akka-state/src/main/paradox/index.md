@@ -42,7 +42,9 @@ Actor model
 
 ## New in Akka
 
-Multi DC
+@span[Typed refinements]{ .fragment }
+
+@span[Multi DC]{ .fragment }
 
 @span[gRPC]{ .fragment }
 
@@ -50,9 +52,226 @@ Multi DC
 
 @span[Stream Refs]{ .fragment }
 
-@span[Typed refinements]{ .fragment }
+@@@
 
-@span[Management (maybe)]{ .fragment }
+@@@section
+
+## Akka Typed
+
+@@@@notes
+
+* Hrmm
+
+@@@@
+
+@@@
+
+
+@@@section
+
+@@snip[x]($root$/../akka-typed-sample/src/main/scala/info/batey/akka/UntypedActors.scala){ #protocol }
+
+@@@@notes
+
+TODO
+
+@@@@
+
+@@@
+
+@@@section
+
+@@snip[x]($root$/../akka-typed-sample/src/main/scala/info/batey/akka/UntypedActors.scala){ #mutable }
+
+@@@@notes
+
+TODO
+
+@@@@
+
+@@@
+
+@@@section
+
+@@snip[x]($root$/../akka-typed-sample/src/main/scala/info/batey/akka/UntypedActors.scala){ #become }
+
+@@@@notes
+
+TODO
+
+@@@@
+
+@@@
+
+@@@section
+
+## Akka Typed
+
+* `ActorRef` becomes `ActorRef[T]`
+* No more Actor trait
+* No more `sender()`
+* No more `actorSelection`
+
+@@@@notes
+
+Notes
+
+@@@@
+
+@@@
+
+@@@section
+
+## Akka Typed
+
+* Send 0+ messages
+* Spawn 0+ children
+* Change its behavior
+
+@@@@notes
+
+TODO
+
+@@@@
+
+@@@
+
+@@@section
+
+@@snip[x]($root$/../akka-typed-sample/src/main/scala/info/batey/akka/TypedActors.scala){ #protocol }
+@@snip[x]($root$/../akka-typed-sample/src/main/scala/info/batey/akka/TypedActors.scala){ #protocol-return .fragment }
+
+@@@@notes
+
+TODO
+
+@@@@
+
+@@@
+
+@@@section
+
+@@snip[x]($root$/../akka-typed-sample/src/main/scala/info/batey/akka/TypedActors.scala){ #state-locked }
+@@snip[x]($root$/../akka-typed-sample/src/main/scala/info/batey/akka/TypedActors.scala){ #state-unlocked .fragment }
+
+@@@@notes
+
+TODO
+
+@@@@
+
+@@@
+
+@@@section
+
+@@snip[x]($root$/../akka-typed-sample/src/main/scala/info/batey/akka/TypedActors.scala){ #top-level }
+
+@@@@notes
+
+TODO
+
+@@@@
+
+@@@
+
+@@@section
+
+@@snip[x]($root$/../akka-typed-sample/src/main/scala/info/batey/akka/TypedActors.scala){ #needs-lock-instance  }
+@@snip[x]($root$/../akka-typed-sample/src/main/scala/info/batey/akka/TypedActors.scala){ #needs-lock .fragment }
+
+@@@@notes
+
+TODO
+
+@@@@
+
+@@@
+
+@@@section
+
+## Running
+
+@@snip[x]($root$/../akka-typed-sample/src/main/scala/info/batey/akka/TypedActors.scala){ #running  }
+
+@@@@notes
+
+TODO
+
+@@@@
+
+@@@
+
+
+@@@section
+
+## Persistence
+
+```scala
+case class Command(data: String)
+case class Event(data: String)
+case class State(events: List[String] = Nil)
+```
+
+```scala
+val behavior: Behavior[Command] =
+  PersistentBehaviors.receive[Command, Event, State](
+    persistenceId = "abc",
+    initialState = State(),
+    commandHandler = (ctx, state, cmd) ⇒ ???,
+    eventHandler = (state, evt) ⇒ ???)
+```
+
+
+@@@@notes
+
+Notes
+
+@@@@
+
+@@@
+
+
+@@@section
+
+## Command Handler
+
+```scala
+val commandHandler: CommandHandler[Command, Event, State] =
+  CommandHandler.command {
+    case Cmd(data) ⇒ Effect.persist(Evt(data))
+  }
+```
+
+* Persist
+* PersistAll
+* Stop
+* Unhandled
+
+
+@@@@notes
+
+Notes
+
+@@@@
+
+@@@
+
+@@@section
+
+## Event Handler
+
+```scala
+val eventHandler: (State, Event) ⇒ (State) = {
+  case (state, Evt(data)) ⇒ state.copy(data :: state.events)
+}
+
+```
+
+@@@@notes
+
+Notes
+
+@@@@
 
 @@@
 
@@ -85,7 +304,7 @@ Multi DC
 @@@@notes
 
 * Failure detection
-* UnreachableDatacentre
+* UnreachableDatacenter
 
 @@@@
 
@@ -95,7 +314,48 @@ Multi DC
 
 ## Sharding and singletons
 
-TODO example of how the proxy works
+@@@
+
+@@@section
+
+## Data Center A
+
+@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/TypedClusterApp.scala){ #dc-config }
+
+@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/TypedClusterApp.scala){ #extension .fragment }
+
+@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/TypedClusterApp.scala){ #singleton .fragment }
+
+@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/TypedClusterApp.scala){ #messages .fragment }
+
+@@@@notes
+
+Notes
+
+@@@@
+
+@@@
+
+
+@@@section
+
+## Data Center B
+
+@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/TypedClusterApp.scala){ #dc-config-b }
+@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/TypedClusterApp.scala){ #proxy .fragment }
+@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/TypedClusterApp.scala){ #proxy-send .fragment }
+
+@@@@notes
+
+Notes
+
+@@@@
+
+@@@
+
+@@@section
+
+TODO: Maybe put in sharding?
 
 @@@
 
@@ -104,6 +364,7 @@ TODO example of how the proxy works
 ## Artery
 
 @@@
+
 
 @@@section
 
@@ -207,6 +468,20 @@ trait SourceRef[T] {
 @@@@
 
 @@@
+
+@@@section
+
+## Akka gRPC
+
+@@@@notes
+
+Notes
+
+@@@@
+
+@@@
+
+
 
 @@@section
 
