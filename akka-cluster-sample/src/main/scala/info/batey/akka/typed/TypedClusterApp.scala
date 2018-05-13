@@ -1,8 +1,8 @@
 package info.batey.akka.typed
 
-import akka.actor.typed.{ActorRef, ActorSystem, Behavior, Props}
-import akka.actor.typed.scaladsl.Behaviors
 import akka.actor.typed.scaladsl.AskPattern._
+import akka.actor.typed.scaladsl.Behaviors
+import akka.actor.typed.{ActorRef, ActorSystem, Behavior, Props}
 import akka.cluster.typed.{Cluster, ClusterSingleton, ClusterSingletonSettings}
 import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
@@ -15,7 +15,7 @@ object Common {
   val config = ConfigFactory.parseString(
     """
 akka {
-  loglevel = "DEBUG"
+  loglevel = "INFO"
 
   actor {
     provider = "cluster"

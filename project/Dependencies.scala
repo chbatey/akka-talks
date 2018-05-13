@@ -2,7 +2,7 @@ import sbt._
 
 object Dependencies {
 
-  val akkaVersion = "2.5.12"
+  val akkaVersion = "2.5-20180508-232351"
 
   val akkaHttpVersion = "10.1.1+16-174a6949"
   val cassandraDriverVersion = "3.3.1"

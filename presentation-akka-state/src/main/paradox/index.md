@@ -320,13 +320,13 @@ Notes
 
 ## Data Center A
 
-@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/TypedClusterApp.scala){ #dc-config }
+@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/typed/TypedClusterApp.scala){ #dc-config }
 
-@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/TypedClusterApp.scala){ #extension .fragment }
+@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/typed/TypedClusterApp.scala){ #extension .fragment }
 
-@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/TypedClusterApp.scala){ #singleton .fragment }
+@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/typed/TypedClusterApp.scala){ #singleton .fragment }
 
-@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/TypedClusterApp.scala){ #messages .fragment }
+@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/typed/TypedClusterApp.scala){ #messages .fragment }
 
 @@@@notes
 
@@ -341,9 +341,9 @@ Notes
 
 ## Data Center B
 
-@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/TypedClusterApp.scala){ #dc-config-b }
-@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/TypedClusterApp.scala){ #proxy .fragment }
-@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/TypedClusterApp.scala){ #proxy-send .fragment }
+@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/typed/TypedClusterApp.scala){ #dc-config-b }
+@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/typed/TypedClusterApp.scala){ #proxy .fragment }
+@@snip[x]($root$/../akka-cluster-sample/src/main/scala/info/batey/akka/typed/TypedClusterApp.scala){ #proxy-send .fragment }
 
 @@@@notes
 

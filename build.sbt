@@ -1,12 +1,14 @@
 import Dependencies._
 
-lazy val root = (project in file("."))
+lazy val akkaTalks = (project in file("."))
   .settings(
+    name := "akka-talks",
     inThisBuild(List(
       organization := "info.batey",
       name := "akka-talks",
-      scalaVersion := "2.12.5",
-      version := "0.1.0-SNAPSHOT"
+      scalaVersion := "2.12.6",
+      version := "0.1.0-SNAPSHOT",
+      resolvers += "akka snapshots" at "https://repo.akka.io/snapshots/"
     )))
   .aggregate(tcpStreams, httpStreams, syncExamples, akkaStreams, akkaOverview,
     presentationFlowControlTut,
@@ -22,6 +24,7 @@ lazy val akkaClusterExample = (project in file("akka-cluster-sample"))
   .settings(
     libraryDependencies ++= akkaClusterDeps
   )
+  .enablePlugins(MultiJvmPlugin)
 
 
 lazy val tcpStreams = (project in file("tcp-streams"))
