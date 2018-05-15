@@ -110,7 +110,6 @@ object ReceptionistExample extends App {
       case _ =>
         LockNotAvailable
     }
-
     //#needs-lock-instance
 
     //#needs-lock

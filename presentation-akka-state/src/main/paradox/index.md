@@ -7,8 +7,9 @@
 
 @@@@notes
 
-* Me
-* Lightbend: Scala, Akka, Play
+* Welcome
+* Last 6 months of dev
+* Some features ready, some not
 
 @@@@
 
@@ -20,13 +21,13 @@
 
 Actor model
 
-@span[Clustering]{ .fragment }
+@span[Clustering]
 
-@span[Persistence (Event Sourcing)]{ .fragment }
+@span[Persistence (Event Sourcing)]
 
-@span[HTTP]{ .fragment }
+@span[HTTP]
 
-@span[Streams]{ .fragment }
+@span[Streams]
 
 @@@@notes
 
@@ -52,6 +53,16 @@ Actor model
 
 @span[Stream Refs]{ .fragment }
 
+@@@@notes
+
+* Typed: Been around for a while,close to the final API
+* MultiDC: Oldest feature, fully ready.
+* gRPC, in early release
+* Early realease, ready to be battle tested
+* Stream refs also fully ready
+
+@@@@
+
 @@@
 
 @@@section
@@ -60,7 +71,9 @@ Actor model
 
 @@@@notes
 
-* Hrmm
+* Prototype
+* Runtime vs API
+* API may change
 
 @@@@
 
@@ -73,7 +86,7 @@ Actor model
 
 @@@@notes
 
-TODO
+* Look at untyped API
 
 @@@@
 
@@ -85,7 +98,8 @@ TODO
 
 @@@@notes
 
-TODO
+* Can be hard to understand
+* State implicit
 
 @@@@
 
@@ -97,7 +111,7 @@ TODO
 
 @@@@notes
 
-TODO
+* Next step iS FSM
 
 @@@@
 
@@ -143,7 +157,8 @@ TODO
 
 @@@@notes
 
-TODO
+* Mandatory to have a single type of a top level type
+* Any responses become explicit
 
 @@@@
 
@@ -156,7 +171,49 @@ TODO
 
 @@@@notes
 
-TODO
+* Explicit states
+* Behaviors.same
+* unlocked here is another
+* Using methods params used to store state
+
+@@@@
+
+
+@@@
+
+@@@section
+
+![dc](images/AkkaTypedReceptionist.png)
+
+@@@@notes
+
+Notes
+
+@@@@
+
+@@@
+
+@@@section
+
+## Receptionist
+
+```scala
+ActorRef[Receptionist.Command]
+```
+
+```scala
+case class Find[T] (...) extends Command
+case class Subscribe[T] (...) extends Command
+```
+
+```scala
+case class Listing[T](...) extends Command
+```
+
+@@@@notes
+
+* Receptionist
+* Implemented with distributed data
 
 @@@@
 
@@ -168,11 +225,43 @@ TODO
 
 @@@@notes
 
-TODO
+* Setup is a factory, get the actor context
 
 @@@@
 
 @@@
+
+@@@section
+
+## Ask
+
+```scala
+initialCtx.ask(initialCtx.system.receptionist)(Find(key)) {
+  case Success(listing) if hasListing(key, listing) =>
+    LockActorAvailable(listing.serviceInstances(key).head)
+  case _ =>
+    LockNotAvailable
+}
+
+```
+
+```scala
+  def ask[Req, Res](
+    otherActor: ActorRef[Req])
+   (createRequest: ActorRef[Res] ⇒ Req)
+   (mapResponse: Try[Res] ⇒ T)
+```
+
+@@@@notes
+
+* Ask needs to make the response type match requester's protocol
+* This is an actor asking an actor.
+* External asks can be typed to anything
+
+@@@@
+
+@@@
+
 
 @@@section
 
@@ -201,6 +290,12 @@ TODO
 
 @@@
 
+@@@section
+
+## Persistence
+
+@@@
+
 
 @@@section
 
@@ -224,7 +319,8 @@ val behavior: Behavior[Command] =
 
 @@@@notes
 
-Notes
+* Auto snapshotting
+* Type safe event adapters
 
 @@@@
 
@@ -275,6 +371,39 @@ Notes
 
 @@@
 
+@@@section
+
+## Persistence
+
+* Automatic snapshotting e.g every 100 events
+* Typed event adapters
+* Tagging without an event adapter
+
+@@@@notes
+
+Notes
+
+@@@@
+
+@@@
+
+@@@section
+
+## Typed
+
+* Coexistence
+* Signals e.g. PostStop
+* New test kits
+* Streams
+
+@@@@notes
+
+Notes
+
+@@@@
+
+@@@
+
 
 @@@section
 
@@ -283,17 +412,32 @@ Notes
 
 @@@
 
+@@@@notes
+
+* DC aware
+* Existing cluster can be run across DCs
+* Gossip and membership
+* Leader actions
+
+@@@@
+
 @@@section
 
-## Why?
-
-@span[Cost of WAN]{ .fragment }
+## Multi DC
 
 @span[Membership management during partitions]{ .fragment }
 
 @span[Singletons and sharding]{ .fragment }
 
 @span[Distributed data]{ .fragment }
+
+@@@@notes
+
+* Why do ppl use multi DCs?
+    * Fault tolerance
+    * Data locality
+
+@@@@
 
 @@@
 
@@ -313,6 +457,13 @@ Notes
 @@@section
 
 ## Sharding and singletons
+
+@@@@notes
+
+* Run separately, one per DC
+* How to use the singleton or shard in a different DC?
+
+@@@@
 
 @@@
 
@@ -347,15 +498,10 @@ Notes
 
 @@@@notes
 
-Notes
+* Ask for akka typed
+* No mapTo
 
 @@@@
-
-@@@
-
-@@@section
-
-TODO: Maybe put in sharding?
 
 @@@
 
@@ -399,11 +545,23 @@ TODO: Maybe put in sharding?
 
 @span[Reactive streams over the network]{ .fragment }
 
+@@@@notes
+
+* Assume streams knowledge
+
+@@@@
+
 @@@
 
 @@@section
 
 ![dc](images/AkkaState-streamrefs.svg)
+
+@@@@notes
+
+* Cluster
+
+@@@@
 
 @@@
 
@@ -423,6 +581,12 @@ TODO: Maybe put in sharding?
 @@@section
 
 @@snip[x]($root$/../akka-overview/src/main/scala/info/batey/akka/streams/StreamRefs.scala){ #source-ref }
+
+@@@@notes
+
+Hrmm
+
+@@@@
 
 @@@
 
@@ -458,6 +622,10 @@ trait SourceRef[T] {
 * Demand redelivery
 * If subscription timeout the materialization will fail
 
+* TCP flow control,
+* serialization, TCP, connection pooling
+* Assigning ports
+
 @@@@
 
 @@@
@@ -468,7 +636,8 @@ trait SourceRef[T] {
 
 @@@@notes
 
-Notes
+* Very new
+* gRPC running on akka http
 
 @@@@
 
@@ -481,7 +650,10 @@ Notes
 
 @@@@notes
 
-Notes
+* Interface first
+* Language agnostic
+* Built on HTTP2
+* Streaming support
 
 @@@@
 
@@ -493,7 +665,7 @@ Notes
 
 @@@@notes
 
-Notes
+* Language agnostic
 
 @@@@
 
@@ -509,6 +681,13 @@ new StreamObserver[T]() {
 }
 ```
 @@@
+
+@@@@notes
+
+* Not particularly composable
+* Usecase fits akka streams
+
+@@@@
 
 
 @@@section
@@ -579,7 +758,7 @@ Notes
 
 @@@@notes
 
-Notes
+* Can be combined with other HTTP Routes
 
 @@@@
 
@@ -643,7 +822,7 @@ Notes
 ## Happy hAkking!
 
 Slides & Code
-:  [github.com/chbatey/akka-streams-flow-control-example](https://github.com/chbatey/akka-streams-flow-control-example)
+:  [github.com/chbatey/akka-talks](https://github.com/chbatey/akka-talks)
 
 Docs & QuickStarts
 :  [akka.io](https://akka.io), [developer.lightbend.com/start](https://developer.lightbend.com/start)
