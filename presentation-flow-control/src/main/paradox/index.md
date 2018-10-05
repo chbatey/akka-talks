@@ -1,6 +1,6 @@
 @@@section { data-background="#15a9ce" }
 
-### Responsive, back-pressured services with Akka 
+### Asynchronous, flow controlled services with Akka Streams
 
 ##### Christopher Batey (@chbatey)
 ##### Software Engineer - Akka team
@@ -191,28 +191,11 @@ pull everything into memory
 
 @@@section
 
-<img src="response-time.png" style="width: 1000px;"/>
-
-@@@@notes
-
-* 14 mins
-* Not just worry about the yellow bit
-* Slow client
-* Dependencies
-    * Don't make their problem your problem
-
-
-@@@@
-
-@@@
-
-@@@section
-
 ## Execution Models 
 
 @@@@notes
 
-* 15 minutes
+* 12 minutes
 * Time for code and details, then demo
 * Thread per request, hystrix
 * Future based programming
@@ -548,39 +531,6 @@ http://www.reactive-streams.org
 
 @@@section
 
-### `java.util.concurrent.Flow`
-
-@@snip[rs]($root$/../http-streams/src/main/java/rs/Publisher.java) { #rs }
-@@snip[rs]($root$/../http-streams/src/main/java/rs/Subscriber.java) { #rs }
-@@snip[rs]($root$/../http-streams/src/main/java/rs/Subscription.java) { #rs }
-@@snip[rs]($root$/../http-streams/src/main/java/rs/Processor.java) { #rs }
-
-@notes[Most significant milestone was the inclusion of the RS interfaces in JDK9
-If you're not on JDK9 you can use the org.reactivestreams library.]
-
-@@@
-
-@@@section
-
-### Availablility
-
-Included in JDK9
-
-No JDK9? No problem!
-
-```
-<dependency>
-  <groupId>org.reactivestreams</groupId>
-  <artifactId>reactive-streams</artifactId>
-  <version>1.0.2</version>
-</dependency>
-```
-
-@@@
-
-
-@@@section
-
 # Akka Streams
 
 @@@@notes
@@ -832,6 +782,7 @@ HTTP Client -> TCP -> Server -> HTTP Server -> TCP -> Apache Cassandra
 
 @@@@notes
 
+* 35min
 * Goal not to teach you Akka HTTP
 * But to show you the benefits of using a library which adheres to flow control
 
@@ -988,17 +939,12 @@ Tweet
 
 @@@
 
-
-
-
-
-
 @span[$selectedLanguage$]{#selectedLanguage}
 
 @@@vars
 <script>
   const selectedLanguage = document.getElementById('selectedLanguage').innerHTML.toLowerCase()
-  const hiddenLanguage = (selectedLanguage == "java") ? "scala" : "java"
+  const hiddenLanguage = (selectedLanguage == "Java") ? "java" : "scala"
 
   console.log(selectedLanguage)
   var javaFragments = document.getElementsByClassName('group-' + hiddenLanguage)

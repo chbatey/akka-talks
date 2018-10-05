@@ -1,0 +1,5 @@
+Install CCM
+Bulk load some enough data to get it to response slowly
+Remove picture of response time vs service time
+Build Java version
+Install a oracle JDK and get JMC

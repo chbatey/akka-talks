@@ -6,6 +6,7 @@ import akka.actor.typed.{ActorRef, ActorSystem}
 import akka.stream.SourceRef
 import akka.stream.scaladsl._
 import akka.stream.typed._
+import akka.stream.typed.scaladsl.ActorMaterializer
 import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
 import info.batey.akka.streams.Server.{GetStream, ServerCommand, StreamEnvelope}

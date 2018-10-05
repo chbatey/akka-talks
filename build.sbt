@@ -1,4 +1,5 @@
 import Dependencies._
+import akka.grpc.gen.scaladsl.play._
 
 lazy val akkaTalks = (project in file("."))
   .settings(
@@ -8,12 +9,22 @@ lazy val akkaTalks = (project in file("."))
       name := "akka-talks",
       scalaVersion := "2.12.6",
       version := "0.1.0-SNAPSHOT",
-      resolvers += "akka snapshots" at "https://repo.akka.io/snapshots/"
+      resolvers += "akka snapshots" at "https://repo.akka.io/snapshots/",
+      resolvers += "com-mvn" at "https://repo.lightbend.com/commercial-releases/"
     )))
   .aggregate(tcpStreams, httpStreams, syncExamples, akkaStreams, akkaOverview,
     presentationFlowControlTut,
     presentationFlowControl,
     presentationAkkaState)
+
+
+lazy val playExamples = (project in file("play-sample"))
+  .enablePlugins(PlayScala, PlayAkkaHttp2Support)
+  .settings(
+    libraryDependencies += guice
+  )
+  .dependsOn(akkaGrpcSample)
+
 
 lazy val akkaTypedExamples = (project in file("akka-typed-sample"))
   .settings(
@@ -56,7 +67,9 @@ lazy val akkaOverview = (project in file("akka-overview"))
 lazy val akkaGrpcSample = (project in file("akka-grpc-sample"))
   .settings(
     libraryDependencies ++= akkaGrpcSampleDeps,
-    javaAgents += "org.mortbay.jetty.alpn" % "jetty-alpn-agent" % "2.0.7" % "runtime"
+    javaAgents += "org.mortbay.jetty.alpn" % "jetty-alpn-agent" % "2.0.7" % "runtime",
+    akkaGrpcExtraGenerators += PlayScalaClientCodeGenerator,
+    akkaGrpcExtraGenerators += PlayScalaServerCodeGenerator
   )
   .enablePlugins(AkkaGrpcPlugin)
   .enablePlugins(JavaAgent)
@@ -74,7 +87,7 @@ lazy val presentationFlowControl = (project in file("presentation-flow-control")
   .dependsOn(tcpStreams, httpStreams, syncExamples)
   .settings(
     paradoxGroups := Map("Language" -> Seq("Scala", "Java")),
-    paradoxProperties += ("selectedLanguage" → sys.env.getOrElse("PARADOX_LANGUAGE", "Scala"))
+    paradoxProperties += ("selectedLanguage" → sys.env.getOrElse("PARADOX_LANGUAGE", "Java"))
   )
   .enablePlugins(GatlingPlugin)
   .enablePlugins(ParadoxRevealPlugin)
