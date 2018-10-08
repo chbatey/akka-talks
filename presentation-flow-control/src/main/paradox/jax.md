@@ -380,12 +380,6 @@ pull everything into memory
 
 # Playing fair
 
-@@@
-
-@@@section
-
-<img src="response-time.png" style="width: 1000px;"/>
-
 @@@@notes
 
 * Actors - how many messages 
@@ -393,8 +387,8 @@ pull everything into memory
 
 @@@@
 
-@@@
 
+@@@
 
 @@@section { data-background-video="images/fishermen.mp4" }
 
@@ -458,6 +452,14 @@ pull everything into memory
 
 ![queue](demand.png)
 
+@@@@notes
+
+* Very abstract
+* Implementing this is a full time job
+* How does it work for Cassandra, Kafka? 
+
+@@@@
+
 @@@
 
 
@@ -471,6 +473,7 @@ pull everything into memory
 * Async passing data. 
 * Data might come from DB, in process computation
 * Flow control is built in
+* Alpakka
 
 @@@@
 
@@ -844,6 +847,12 @@ from the database when you request them
     * Client then demands more
     * Everything starts flowing
 
+
+@@@
+
+@@@section
+
+<img src="alpakkadocs.png" style="width: 800px;"/>
 
 @@@
 

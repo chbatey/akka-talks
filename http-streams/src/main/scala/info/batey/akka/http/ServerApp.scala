@@ -18,5 +18,8 @@ object ServerApp extends App with UserRoute {
     bindAndHandle(route, "localhost", 8080)
   //#bind
 
-  bound.onComplete(println)
+
+  bound.onComplete(bound => {
+    println("Server up and running. Go forth and demo the flow control... " + bound)
+  })
 }

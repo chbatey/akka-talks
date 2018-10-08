@@ -57,7 +57,7 @@ trait UserRoute {
     * Small request all async from incoming TCP socket to outgoing TCP socket
     * to the database and then back again.
     *
-    * Demonstrates: Async == Scalability
+    * Demonstrates: Async == Scalability/Resource efficient
     */
   val userRoute =
   //#user-route
@@ -92,5 +92,5 @@ trait UserRoute {
   }
   //#stream-route
 
-  val route: Route = streamingRoute ~ userRoute ~ userRouteNoCass ~ userRouteBlocking
+  val route: Route = concat(streamingRoute, userRoute, userRouteNoCass, userRouteBlocking)
 }

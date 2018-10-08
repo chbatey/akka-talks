@@ -13,6 +13,7 @@ object Dependencies {
   val akkaManagementVersion = "0.18.0"
   val akkaCommercialVersion = "1.1.2"
   val alpakkaVersion = "1.0-M1"
+  val alpakkaKafkaVersion = "0.22"
 
   val akkaStreams = "com.typesafe.akka" %% "akka-stream" % akkaVersion
 
@@ -23,6 +24,7 @@ object Dependencies {
   val akkaDiscoveryConfig = "com.lightbend.akka.discovery" %% "akka-discovery-config" % akkaManagementVersion
   val akkaSbr = "com.lightbend.akka" %% "akka-split-brain-resolver" % akkaCommercialVersion
   val akkaManagementHttp = "com.lightbend.akka.management" %% "akka-management-cluster-http" % akkaManagementVersion
+  val alpakkaKafka = "com.typesafe.akka" %% "akka-stream-kafka" % alpakkaKafkaVersion
 
   val play = "com.typesafe.play" %% "play" % playVersion
 
@@ -56,7 +58,7 @@ object Dependencies {
 
   val akkaOverviewDeps = Seq(akkaStreams, akkaHttp, akkaTyped, akkaStreamsTyped, akkaClusterTyped)
 
-  val akkaGrpcSampleDeps = Seq(akkaStreams, akkaHttp, akkaTyped, akkaStreamsTyped, akkaDiscoveryConfig, play)
+  val akkaGrpcSampleDeps = Seq(akkaStreams, akkaHttp, akkaTyped, akkaStreamsTyped, akkaDiscoveryConfig, play, alpakkaKafka, alpakkaCassandra)
 
   val akkaTypedDeps = Seq(akkaTyped)
 

@@ -31,14 +31,16 @@ object ClientDriver extends App with ActivityClient {
 
   activity.onComplete {
     case Success(source) =>
+      println("Connected to HTTP server. Please enter initial demand")
       val sub: TestSubscriber.Probe[Event] = source.runWith(testProbe)
       while (true) {
         Try {
           val request = StdIn.readLine().toInt
           println(s"Requesting " + request)
-          (0 until request) foreach { i =>
+          (0 until request).foreach { _ =>
             println(sub.requestNext())
           }
+          println(s"Successfully read $request events. Enter how many more...")
         }
       }
     case Failure(t) =>

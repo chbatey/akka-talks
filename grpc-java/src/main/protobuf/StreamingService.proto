@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "info.batey.akka";
+option java_outer_classname = "ActivityService";
+
+package info.batey.akka;
+
+service ActivityService {
+    rpc UserActivity(ActivityRequest) returns (stream Activity) {}
+}
+
+message ActivityRequest{
+    string user = 1;
+}
+
+message Activity {
+    string user = 1;
+    string activity = 2;
+}

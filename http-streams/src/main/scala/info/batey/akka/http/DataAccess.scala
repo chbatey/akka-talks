@@ -77,6 +77,7 @@ object DataAccess extends LazyLogging {
     */
   //#lookup
   def lookupEvents(userId: UserId)(implicit ec: ActorMaterializer): Source[Event, NotUsed] = {
+    // Fancy Alpakka
     CassandraSource(new SimpleStatement("select * from user_tracking where user_id = ?", userId))(session)
       .map(row => Event(
         row.getString("user_id"),

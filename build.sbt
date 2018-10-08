@@ -1,5 +1,6 @@
 import Dependencies._
 import akka.grpc.gen.scaladsl.play._
+import scalapb.options.Scalapb
 
 lazy val akkaTalks = (project in file("."))
   .settings(
@@ -71,8 +72,20 @@ lazy val akkaGrpcSample = (project in file("akka-grpc-sample"))
     akkaGrpcExtraGenerators += PlayScalaClientCodeGenerator,
     akkaGrpcExtraGenerators += PlayScalaServerCodeGenerator
   )
+  .dependsOn(httpStreams)
   .enablePlugins(AkkaGrpcPlugin)
   .enablePlugins(JavaAgent)
+
+lazy val grpcJavaSample = (project in file("grpc-java"))
+  .settings(
+    PB.targets in Compile := Seq(
+      scalapb.gen() -> (sourceManaged in Compile).value
+    ),
+    libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.8.1",
+    libraryDependencies ++= Seq("com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion % "protobuf",
+      "io.grpc" % "grpc-netty" % scalapb.compiler.Version.grpcJavaVersion,
+      "com.thesamet.scalapb" %% "scalapb-runtime-grpc" % scalapb.compiler.Version.scalapbVersion)
+  )
 
 lazy val presentationFlowControlTut = (project in file("presentation-flow-control-tut"))
   .dependsOn(tcpStreams, httpStreams, syncExamples)
