@@ -40,7 +40,7 @@ object ClientDriver extends App with ActivityClient {
           (0 until request).foreach { _ =>
             println(sub.requestNext())
           }
-          println(s"Successfully read $request events. Enter how many more...")
+          println(s"Successfully read $request event(s). Enter how many more...")
         }
       }
     case Failure(t) =>

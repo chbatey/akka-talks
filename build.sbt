@@ -77,6 +77,7 @@ lazy val akkaGrpcSample = (project in file("akka-grpc-sample"))
   .enablePlugins(JavaAgent)
 
 lazy val grpcJavaSample = (project in file("grpc-java"))
+  .dependsOn(httpStreams)
   .settings(
     PB.targets in Compile := Seq(
       scalapb.gen() -> (sourceManaged in Compile).value

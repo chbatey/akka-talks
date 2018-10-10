@@ -58,7 +58,10 @@ object Dependencies {
 
   val akkaOverviewDeps = Seq(akkaStreams, akkaHttp, akkaTyped, akkaStreamsTyped, akkaClusterTyped)
 
-  val akkaGrpcSampleDeps = Seq(akkaStreams, akkaHttp, akkaTyped, akkaStreamsTyped, akkaDiscoveryConfig, play, alpakkaKafka, alpakkaCassandra)
+  val akkaGrpcSampleDeps = Seq(
+    akkaStreams, akkaHttp, akkaTyped, akkaStreamsTyped, akkaDiscoveryConfig,
+    play, alpakkaKafka, alpakkaCassandra
+  )
 
   val akkaTypedDeps = Seq(akkaTyped)
 

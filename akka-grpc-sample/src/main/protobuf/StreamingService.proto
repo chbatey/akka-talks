@@ -8,9 +8,14 @@ package info.batey.akka;
 
 service ActivityService {
     rpc UserActivity(ActivityRequest) returns (stream Activity) {}
+    rpc SomethingElse(Something) returns (stream Activity) {}
 }
 
-message ActivityRequest{
+message ActivityRequest {
+    string user = 1;
+}
+
+message Something {
     string user = 1;
 }
 

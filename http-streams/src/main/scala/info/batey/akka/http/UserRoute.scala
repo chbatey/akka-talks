@@ -82,13 +82,13 @@ trait UserRoute {
     */
   //#stream-route
   val streamingRoute = path("user" / "tracking" / Segment) { name: String =>
-    val source: Source[Event, NotUsed] =
+    val databaseSource: Source[Event, NotUsed] =
       DataAccess.lookupEvents(name)
-    val asJson: Source[ByteString, NotUsed] = source.map(e =>
+    val sourceAsJson: Source[ByteString, NotUsed] = databaseSource.map(e =>
       ByteString(s"${e.toJson.toString()}\n",
         StandardCharsets.UTF_8))
 
-    complete(HttpEntity(ContentTypes.`application/json`, asJson))
+    complete(HttpEntity(ContentTypes.`application/json`, sourceAsJson))
   }
   //#stream-route
 
